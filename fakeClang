@@ -1,0 +1,12 @@
+#!/bin/bash
+rawArgs="$@"
+ldFix="-lgssapi_krb5 -lrt"
+globalizationPath=$libSystemPath"libSystem.Globalization.Native.a"
+securityPath=$libSystemPath"libSystem.Net.Security.Native.a"
+sslPath=$libSystemPath"libSystem.Security.Cryptography.Native.OpenSsl.a"
+fixedArgs=${rawArgs//$ldFix/}
+fixedArgs=${fixedArgs//$ldFix/}
+fixedArgs=${fixedArgs//$globalizationPath/}
+fixedArgs=${fixedArgs//$securityPath/}
+fixedArgs=${fixedArgs//$sslPath/}
+$RealCppCompilerAndLinker $fixedArgs
