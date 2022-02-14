@@ -42,7 +42,7 @@ The following command assumes:
 You can't strip an android binary using strip command from your linux envirionment so you need use from Android NDK. <br/>
 For example:
 
-	$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/x86_64-linux-android-strip bin/Release/net6.0/android-arm64/publish/AndroidHelloJniLib.so
+	$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android-strip bin/Release/net6.0/android-arm64/publish/AndroidHelloJniLib.so
 
 # How to test it?
 This sample is inspired by https://github.com/android/ndk-samples/tree/main/hello-jni so with some changes you can load this library from that application. <br/>
