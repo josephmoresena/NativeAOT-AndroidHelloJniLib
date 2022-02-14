@@ -19,7 +19,6 @@
 	</ItemGroup>
 	<PropertyGroup>
 		<TrimUnusedDependencies>true</TrimUnusedDependencies>
-		<IlcDisableReflection>true</IlcDisableReflection>
 		<RootAllApplicationAssemblies>false</RootAllApplicationAssemblies>
 		<IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
 		<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
@@ -41,8 +40,8 @@
 	</PropertyGroup>
 	<ItemGroup Condition="$(IsAndroid) == 'true'">
 		<!--Hack for passing a valid target argument on NDK linker invocation-->
-		<LinkerArg Condition="'$(CrossCompileArch)' == 'x86_64'" Include="--target=$(CrossCompileArch)"/>
-		<LinkerArg Condition="'$(CrossCompileArch)' != 'x86_64'" Include="--target=$(CrossCompileArch)-linux-android28"/>
+		<LinkerArg Condition="'$(CrossCompileArch)' == 'x86_64'" Include="--target=$(CrossCompileArch)-android21"/>
+		<LinkerArg Condition="'$(CrossCompileArch)' != 'x86_64'" Include="--target=$(CrossCompileArch)-linux-android21"/>
 		<!--Adds System.Security.Cryptography.Native.Android to rsp file and linker-->
 		<NetCoreAppNativeLibrary Include="System.Security.Cryptography.Native.Android"/>
 	</ItemGroup>
