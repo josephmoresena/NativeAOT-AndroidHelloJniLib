@@ -10,20 +10,23 @@
 		<!--This is needed in order to build successfully Android binaries-->
 		<RealRuntimeIdentifier>$(RuntimeIdentifier)</RealRuntimeIdentifier>
 		<IsAndroid>$(RealRuntimeIdentifier.ToLower().StartsWith('android'))</IsAndroid>
+		<TrimMode>Link</TrimMode>
+		<InvariantGlobalization>true</InvariantGlobalization>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-*"/>
 		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="0.1.5"/>
 		<!--JNI libs needs to be compiled with -z noexecstack-->
 		<LinkerArg Condition="$([MSBuild]::IsOSPlatform('Linux'))" Include="-z noexecstack"/>
+		<IlcArg Include="--reflectedonly" Condition="'$(IlcDisableReflection)' != 'true'" />
 	</ItemGroup>
 	<PropertyGroup>
 		<TrimUnusedDependencies>true</TrimUnusedDependencies>
 		<RootAllApplicationAssemblies>false</RootAllApplicationAssemblies>
-		<IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
+		<IlcGenerateCompleteTypeMetadata>true</IlcGenerateCompleteTypeMetadata>
 		<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+		<IlcTrimMetadata>true</IlcTrimMetadata>
 		<IlcOptimizationPreference>Speed</IlcOptimizationPreference>
-		<IlcOptimizationPreference>Size</IlcOptimizationPreference>
 		<IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
 	</PropertyGroup>
 	<!--Following blocks are exclusive for Android building-->

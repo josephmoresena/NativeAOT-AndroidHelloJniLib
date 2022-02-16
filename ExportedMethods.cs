@@ -46,8 +46,7 @@ namespace HelloJniLib
         private static String GetRuntimeReflectionInformation()
         {
             if (!DisabledReflection)
-                return $"Process Arch: {RuntimeInformation.ProcessArchitecture}" + Environment.NewLine
-                    + $"Runtime Name: {RuntimeInformation.FrameworkDescription}" + Environment.NewLine
+                return $"Runtime Name: {RuntimeInformation.FrameworkDescription}" + Environment.NewLine
                     + $"Runtime Path: {RuntimeEnvironment.GetRuntimeDirectory()}" + Environment.NewLine
                     + $"Runtime Version: {RuntimeEnvironment.GetSystemVersion()}" + Environment.NewLine;
             return String.Empty;
