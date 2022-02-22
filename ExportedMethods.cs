@@ -18,7 +18,7 @@ namespace HelloJniLib
         private static Int32 count = 0;
 
         [UnmanagedCallersOnly(EntryPoint = "JNI_OnLoad")]
-        public static Int32 LoadLibrary(JavaVMRef vm, IntPtr unknown)
+        internal static Int32 LoadLibrary(JavaVMRef vm, IntPtr unknown)
         {
             load = DateTime.Now;
             return 0x00010006; //JNI_VERSION_1_6
@@ -60,7 +60,7 @@ namespace HelloJniLib
             + GetRuntimeInformation();
         private static String GetRuntimeInformation()
             => !disabledReflection ? GetRuntimeReflectionInformation() : "REFLECTION DISABLED";
-        private static string GetRuntimeReflectionInformation()
+        private static String GetRuntimeReflectionInformation()
         {
             return $"Framework Version: {Environment.Version}" + Environment.NewLine
                 + $"Runtime Name: {RuntimeInformation.FrameworkDescription}" + Environment.NewLine
