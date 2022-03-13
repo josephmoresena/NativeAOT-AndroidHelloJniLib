@@ -14,10 +14,10 @@
 		<InvariantGlobalization>true</InvariantGlobalization>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-*"/>
-		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="0.1.5"/>
+		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-*" />
+		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="0.1.6.2" />
 		<!--JNI libs needs to be compiled with -z noexecstack-->
-		<LinkerArg Condition="$([MSBuild]::IsOSPlatform('Linux'))" Include="-z noexecstack"/>
+		<LinkerArg Condition="$([MSBuild]::IsOSPlatform('Linux'))" Include="-z noexecstack" />
 		<IlcArg Include="--reflectedonly" Condition="'$(IlcDisableReflection)' != 'true'" />
 	</ItemGroup>
 	<PropertyGroup>
@@ -32,9 +32,9 @@
 	<!--Following blocks are exclusive for Android building-->
 	<PropertyGroup Condition="$(IsAndroid) == 'true'">
 		<!--Hack for avoid passing linux-gnu as target parameter on NDK linker invocation-->
-		<CrossCompileRid/>
+		<CrossCompileRid />
 		<CrossCompileRid Condition="'$(TargetOS)' != 'OSX' and !$(RuntimeIdentifier.EndsWith('-$(OSHostArch)'))">$(RuntimeIdentifier)</CrossCompileRid>
-		<CrossCompileArch/>
+		<CrossCompileArch />
 		<CrossCompileArch Condition="$(CrossCompileRid.EndsWith('-x64'))">x86_64</CrossCompileArch>
 		<CrossCompileArch Condition="$(CrossCompileRid.EndsWith('-arm64'))">aarch64</CrossCompileArch>
 		<RuntimeIlcPackageName>runtime.$(OSIdentifier)-arm64.Microsoft.DotNet.ILCompiler</RuntimeIlcPackageName>
@@ -43,23 +43,23 @@
 	</PropertyGroup>
 	<ItemGroup Condition="$(IsAndroid) == 'true'">
 		<!--Hack for passing a valid target argument on NDK linker invocation-->
-		<LinkerArg Condition="'$(CrossCompileArch)' == 'x86_64'" Include="--target=$(CrossCompileArch)-android21"/>
-		<LinkerArg Condition="'$(CrossCompileArch)' != 'x86_64'" Include="--target=$(CrossCompileArch)-linux-android21"/>
+		<LinkerArg Condition="'$(CrossCompileArch)' == 'x86_64'" Include="--target=$(CrossCompileArch)-android21" />
+		<LinkerArg Condition="'$(CrossCompileArch)' != 'x86_64'" Include="--target=$(CrossCompileArch)-linux-android21" />
 		<!--Adds System.Security.Cryptography.Native.Android to rsp file and linker-->
-		<NetCoreAppNativeLibrary Include="System.Security.Cryptography.Native.Android"/>
+		<NetCoreAppNativeLibrary Include="System.Security.Cryptography.Native.Android" />
 	</ItemGroup>
 	<!--This target intercept the ilc invocation in order to remove invalid lines for Android Systems-->
 	<Target Name="FixCompilation" Condition="$(IsAndroid) == 'true'" AfterTargets="WriteIlcRspFileForCompilation" BeforeTargets="IlcCompile">
 		<!--Reads as lines the generated rsp file-->
 		<ReadLinesFromFile File="%(ManagedBinary.IlcRspFile)">
-			<Output TaskParameter="Lines" PropertyName="RspLines"/>
+			<Output TaskParameter="Lines" PropertyName="RspLines" />
 		</ReadLinesFromFile>
 		<!--Gets a single text from the rsp lines-->
 		<PropertyGroup>
 			<RspText Condition="$(RspLines) != ''">@(RspLines)</RspText>
 		</PropertyGroup>
 		<!--The sed tool is used as invalid lines remover-->
-		<Exec Command="sed -i -z $(RspPatch) %(ManagedBinary.IlcRspFile)"/>
+		<Exec Command="sed -i -z $(RspPatch) %(ManagedBinary.IlcRspFile)" />
 	</Target>
 	<!--This target intercepts the linker invocation in order to avoid an invalid target parameter for Android Systems-->
 	<Target Name="FixArchitecture" Condition="$(IsAndroid) == 'true'" AfterTargets="IlcCompile" BeforeTargets="SetupOSSpecificProps">
