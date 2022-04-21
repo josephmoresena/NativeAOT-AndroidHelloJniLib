@@ -1,6 +1,6 @@
 #!/bin/bash
 rawArgs="$@"
-ldFix="-lgssapi_krb5 -lrt"
+ldFix="-lrt"
 globalizationPath=$libSystemPath"libSystem.Globalization.Native.a"
 securityPath=$libSystemPath"libSystem.Net.Security.Native.a"
 sslPath=$libSystemPath"libSystem.Security.Cryptography.Native.OpenSsl.a"

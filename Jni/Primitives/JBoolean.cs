@@ -7,24 +7,27 @@ namespace HelloJniLib.Jni.Primitives
     public readonly struct JBoolean : IComparable<Boolean>, IEquatable<Boolean>
     {
         internal static readonly Type Type = typeof(JBoolean);
+        private static readonly Byte trueByte = 1;
+        private static readonly Byte falseByte = 2;
 
         public static readonly CString Signature = "Z";
 
-        private readonly Boolean _value;
+        private readonly Byte _value;
+        private Boolean Value => this._value == trueByte;
 
-        private JBoolean(Boolean value) => this._value = value;
+        private JBoolean(Boolean value) => this._value = value ? trueByte : falseByte;
 
         #region Operators
         public static implicit operator JBoolean(Boolean value) => new(value);
-        public static implicit operator Boolean(JBoolean jValue) => jValue._value;
+        public static implicit operator Boolean(JBoolean jValue) => jValue._value == 1;
         public static implicit operator JBooleanRef(JBoolean? jValue) => new(jValue);
-        public static JBoolean operator !(JBoolean a) => new(!a._value);
-        public static JBoolean operator |(JBoolean a, JBoolean b) => new(a._value || b._value);
-        public static JBoolean operator |(Boolean a, JBoolean b) => new(a || b._value);
-        public static JBoolean operator |(JBoolean a, Boolean b) => new(a._value || b);
-        public static JBoolean operator &(JBoolean a, JBoolean b) => new(a._value && b._value);
-        public static JBoolean operator &(Boolean a, JBoolean b) => new(a && b._value);
-        public static JBoolean operator &(JBoolean a, Boolean b) => new(a._value && b);
+        public static JBoolean operator !(JBoolean a) => new(!a.Value);
+        public static JBoolean operator |(JBoolean a, JBoolean b) => new(a.Value || b.Value);
+        public static JBoolean operator |(Boolean a, JBoolean b) => new(a || b.Value);
+        public static JBoolean operator |(JBoolean a, Boolean b) => new(a.Value || b);
+        public static JBoolean operator &(JBoolean a, JBoolean b) => new(a.Value && b.Value);
+        public static JBoolean operator &(Boolean a, JBoolean b) => new(a && b.Value);
+        public static JBoolean operator &(JBoolean a, Boolean b) => new(a.Value && b);
         public static Boolean operator ==(JBoolean a, JBoolean b) => a._value.Equals(b._value);
         public static Boolean operator ==(Boolean a, JBoolean b) => a.Equals(b._value);
         public static Boolean operator ==(JBoolean a, Boolean b) => a._value.Equals(b);
