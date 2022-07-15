@@ -18,7 +18,6 @@
 		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="0.1.7" />
 		<!--JNI libs needs to be compiled with -z noexecstack-->
 		<LinkerArg Condition="$([MSBuild]::IsOSPlatform('Linux'))" Include="-z noexecstack" />
-		<IlcArg Include="--reflectedonly" Condition="'$(IlcDisableReflection)' != 'true'" />
 	</ItemGroup>
 	<PropertyGroup>
 		<TrimUnusedDependencies>true</TrimUnusedDependencies>
