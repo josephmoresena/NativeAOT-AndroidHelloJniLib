@@ -1,11 +1,15 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
+using Rxmxnx.PInvoke.Extensions;
+
 namespace HelloJniLib.Jni.References
 {
-    public readonly struct JWeakRef : IEquatable<JWeakRef>
+    public readonly struct JWeakRef : IEquatable<JWeakRef>, IWrapper<IntPtr>
     {
 #pragma warning disable 0649
         private readonly IntPtr _value;
+
+        public IntPtr Value => this._value;
 #pragma warning restore 0649
 
         #region Public Methods

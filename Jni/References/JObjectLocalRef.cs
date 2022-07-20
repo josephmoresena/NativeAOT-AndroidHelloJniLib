@@ -8,6 +8,9 @@ namespace HelloJniLib.Jni.References
         private readonly IntPtr _value;
 #pragma warning restore 0649
 
+        public JObjectLocalRef(JWeakRef jWeakRef) => this._value = jWeakRef.Value;
+
+
         #region Public Methods
         public Boolean Equals(JObjectLocalRef other)
             => this._value.Equals(other._value);

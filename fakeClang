@@ -1,11 +1,15 @@
 #!/bin/bash
 rawArgs="$@"
-ldFix="-lrt"
+ldrt="-lrt"
+ldlog="-llog"
 globalizationPath=$libSystemPath"libSystem.Globalization.Native.a"
 securityPath=$libSystemPath"libSystem.Net.Security.Native.a"
 sslPath=$libSystemPath"libSystem.Security.Cryptography.Native.OpenSsl.a"
-fixedArgs=${rawArgs//$ldFix/}
+fixedArgs=${rawArgs//$ldrt/ldlog}
 fixedArgs=${fixedArgs//$globalizationPath/}
 fixedArgs=${fixedArgs//$securityPath/}
 fixedArgs=${fixedArgs//$sslPath/}
+
+echo $RealCppCompilerAndLinker" "$fixedArgs
+
 $RealCppCompilerAndLinker $fixedArgs

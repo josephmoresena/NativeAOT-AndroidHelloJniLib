@@ -1,12 +1,16 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
+using Rxmxnx.PInvoke.Extensions;
+
 namespace HelloJniLib.Jni.References
 {
-    public readonly struct JClassLocalRef : IEquatable<JClassLocalRef>
+    public readonly struct JClassLocalRef : IEquatable<JClassLocalRef>, IWrapper<JObjectLocalRef>
     {
 #pragma warning disable 0649
         private readonly JObjectLocalRef _value;
 #pragma warning restore 0649
+
+        public JObjectLocalRef Value => this._value;
 
         #region Public Methods
         public Boolean Equals(JClassLocalRef other)

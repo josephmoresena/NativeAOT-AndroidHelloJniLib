@@ -1,4 +1,8 @@
-﻿namespace HelloJniLib.Jni.Pointers
+﻿using HelloJniLib.Jni.Values;
+
+using Rxmxnx.PInvoke.Extensions;
+
+namespace HelloJniLib.Jni.Pointers
 {
     public readonly struct JavaVMRef : IEquatable<JavaVMRef>
     {
@@ -9,6 +13,10 @@
         #region Operators
         public static Boolean operator ==(JavaVMRef a, JavaVMRef b) => a._value.Equals(b._value);
         public static Boolean operator !=(JavaVMRef a, JavaVMRef b) => !a._value.Equals(b._value);
+        #endregion
+
+        #region Public Properties
+        internal readonly ref JavaVMValue VirtualMachine => ref this._value.AsReference<JavaVMValue>();
         #endregion
 
         #region Public Methods

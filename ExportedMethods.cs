@@ -12,17 +12,20 @@ namespace HelloJniLib
 #pragma warning disable IDE0060
     public static class ExportedMethods
     {
-        private static readonly Boolean disabledReflection = !typeof(String).ToString().Contains(nameof(String));
+        internal static readonly Boolean DisabledReflection = !typeof(String).ToString().Contains(nameof(String));
 
         private static DateTime? load = default;
         private static Int32 count = 0;
 
-        [UnmanagedCallersOnly(EntryPoint = "JNI_OnLoad")]
-        internal static Int32 LoadLibrary(JavaVMRef vm, IntPtr unknown)
-        {
-            load = DateTime.Now;
-            return 0x00010006; //JNI_VERSION_1_6
-        }
+        /*
+            [UnmanagedCallersOnly(EntryPoint = "JNI_OnLoad")]
+            internal static Int32 LoadLibrary(JavaVMRef vm, IntPtr unknown)
+            {
+                load = DateTime.Now;
+                count = 0;
+                return 0x00010006; //JNI_VERSION_1_6
+            }
+        */
 
         [UnmanagedCallersOnly(EntryPoint = "Java_com_example_hellojni_HelloJni_stringFromJNI")]
         internal static JStringLocalRef Hello(JEnvRef jEnv, JObjectLocalRef jObj)
@@ -39,9 +42,58 @@ namespace HelloJniLib
             String result =
                 "Hello from JNI! Compiled with NativeAOT." + Environment.NewLine
                 + GetRuntimeInformation(call);
-            return newString(jEnv, result.AsSpan().AsIntPtr(), result.Length);
+            return CreateJString(result, jEnv, newString);
         }
 
+        [UnmanagedCallersOnly(EntryPoint = "Java_com_example_hellojni_SqlServerConnection_getConnectionString")]
+        internal static JStringLocalRef GetConnectionString(JEnvRef jEnv, JObjectLocalRef jObj, JStringLocalRef jServer, JStringLocalRef jUser, JStringLocalRef jPassword)
+        {
+            JavaVMRef vm = default;
+            JEnvValue value = jEnv.Environment;
+            ref JNativeInterface jInterface = ref value.Functions;
+
+            GetStringLengthDelegate getStringLength =
+                jInterface.GetStringLengthPointer.AsDelegate<GetStringLengthDelegate>();
+            GetStringRegionDelegate getStringRegion =
+                jInterface.GetStringRegionPointer.AsDelegate<GetStringRegionDelegate>();
+            NewStringDelegate newString =
+                jInterface.NewStringPointer.AsDelegate<NewStringDelegate>();
+            NewWeakGlobalRefDelegate newWeakGlobalRef =
+                jInterface.NewWeakGlobalRefPointer.AsDelegate<NewWeakGlobalRefDelegate>();
+
+            GetJavaVMDelegate getJavaVM =
+                jInterface.GetJavaVMPointer.AsDelegate<GetJavaVMDelegate>();
+
+            String server = new String(default, getStringLength(jEnv, jServer));
+            String user = new String(default, getStringLength(jEnv, jUser));
+            String password = new String(default, getStringLength(jEnv, jPassword));
+
+            getStringRegion(jEnv, jServer, 0, server.Length, server.AsSpan());
+            getStringRegion(jEnv, jUser, 0, user.Length, user.AsSpan());
+            getStringRegion(jEnv, jPassword, 0, password.Length, password.AsSpan());
+            getJavaVM(jEnv, ref vm);
+
+            String strConn =
+                $"Server=tcp:{server};Database=master;" +
+                "Trusted_Connection=false;MultipleActiveResultSets=true;" +
+                $"User ID={user};Password={password};";
+            Console.WriteLine($"Connection string created. {strConn}");
+
+            JWeakRef jWeak = newWeakGlobalRef(jEnv, jObj);
+            Console.WriteLine($"Weak object created. {jWeak.Value}");
+
+            _ = SqlExperiment.ConnectAsync(vm, jWeak, strConn);
+            Console.WriteLine("Invoked connection async.");
+
+            return CreateJString(strConn, jEnv, newString);
+        }
+
+        internal static JStringLocalRef CreateJString(String result, JEnvRef jEnv, NewStringDelegate newString)
+        {
+            ReadOnlySpan<Char> chars = result;
+            JStringLocalRef jString = newString(jEnv, chars, chars.Length);
+            return jString;
+        }
         private static String GetRuntimeInformation(DateTime call)
             => $"Load: {load.GetString()}" + Environment.NewLine
             + $"Call: {call.GetString()}" + Environment.NewLine
@@ -59,7 +111,7 @@ namespace HelloJniLib
             + Environment.NewLine + Environment.NewLine
             + GetRuntimeInformation();
         private static String GetRuntimeInformation()
-            => !disabledReflection ? GetRuntimeReflectionInformation() : "REFLECTION DISABLED";
+            => !DisabledReflection ? GetRuntimeReflectionInformation() : "REFLECTION DISABLED";
         private static String GetRuntimeReflectionInformation()
         {
             return $"Framework Version: {Environment.Version}" + Environment.NewLine
