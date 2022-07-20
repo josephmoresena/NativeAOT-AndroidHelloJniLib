@@ -17,15 +17,11 @@ namespace HelloJniLib
         private static DateTime? load = default;
         private static Int32 count = 0;
 
-        /*
-            [UnmanagedCallersOnly(EntryPoint = "JNI_OnLoad")]
-            internal static Int32 LoadLibrary(JavaVMRef vm, IntPtr unknown)
-            {
-                load = DateTime.Now;
-                count = 0;
-                return 0x00010006; //JNI_VERSION_1_6
-            }
-        */
+#if !ANDROID
+        [UnmanagedCallersOnly(EntryPoint = "JNI_OnLoad")]
+        private static Int32 LoadLibraryExported(JavaVMRef vm, IntPtr unknown) => LoadLibrary(vm, unknown);
+#endif
+
 
         [UnmanagedCallersOnly(EntryPoint = "Java_com_example_hellojni_HelloJni_stringFromJNI")]
         internal static JStringLocalRef Hello(JEnvRef jEnv, JObjectLocalRef jObj)
@@ -88,6 +84,12 @@ namespace HelloJniLib
             return CreateJString(strConn, jEnv, newString);
         }
 
+        internal static Int32 LoadLibrary(JavaVMRef vm, IntPtr unknown)
+        {
+            load = DateTime.Now;
+            count = 0;
+            return 0x00010006; //JNI_VERSION_1_6
+        }
         internal static JStringLocalRef CreateJString(String result, JEnvRef jEnv, NewStringDelegate newString)
         {
             ReadOnlySpan<Char> chars = result;
