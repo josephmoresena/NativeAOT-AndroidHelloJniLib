@@ -15,7 +15,7 @@ namespace HelloJniLib
         private static readonly CString printSqlResultName = "printSqlResult";
         private static readonly CString printSqlResultSignature = "(Ljava/lang/String;)V";
 
-        internal static async Task ConnectAsync(JavaVMRef vm, JWeakRef jWeak, String strConn)
+        internal static async void ConnectAsync(JavaVMRef vm, JWeakRef jWeak, String strConn)
         {
             String result;
             try

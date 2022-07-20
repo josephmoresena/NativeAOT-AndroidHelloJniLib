@@ -82,7 +82,7 @@ namespace HelloJniLib
             JWeakRef jWeak = newWeakGlobalRef(jEnv, jObj);
             Console.WriteLine($"Weak object created. {jWeak.Value}");
 
-            _ = SqlExperiment.ConnectAsync(vm, jWeak, strConn);
+            SqlExperiment.ConnectAsync(vm, jWeak, strConn);
             Console.WriteLine("Invoked connection async.");
 
             return CreateJString(strConn, jEnv, newString);
