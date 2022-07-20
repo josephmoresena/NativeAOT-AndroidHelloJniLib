@@ -17,7 +17,7 @@ namespace HelloJniLib
 
         internal static async void ConnectAsync(JavaVMRef vm, JWeakRef jWeak, String strConn)
         {
-            await Task.Delay(100);
+            await Task.Delay(500);
             Console.WriteLine("Start async method.");
 
             String result = await GetResultAsync(strConn);

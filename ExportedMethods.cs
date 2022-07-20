@@ -64,9 +64,9 @@ namespace HelloJniLib
             GetJavaVMDelegate getJavaVM =
                 jInterface.GetJavaVMPointer.AsDelegate<GetJavaVMDelegate>();
 
-            String server = new String(default, getStringLength(jEnv, jServer));
-            String user = new String(default, getStringLength(jEnv, jUser));
-            String password = new String(default, getStringLength(jEnv, jPassword));
+            String server = new String(' ', getStringLength(jEnv, jServer));
+            String user = new String(' ', getStringLength(jEnv, jUser));
+            String password = new String(' ', getStringLength(jEnv, jPassword));
 
             getStringRegion(jEnv, jServer, 0, server.Length, server.AsSpan());
             getStringRegion(jEnv, jUser, 0, user.Length, user.AsSpan());
@@ -74,9 +74,9 @@ namespace HelloJniLib
             getJavaVM(jEnv, ref vm);
 
             String strConn =
-                $"Server=tcp:{server};Database=master;" +
+                $"Server=tcp:{server.Trim()};Database=master;" +
                 "Trusted_Connection=false;MultipleActiveResultSets=true;" +
-                $"User ID={user};Password={password};";
+                $"User ID={user.Trim()};Password={password.Trim()};";
             Console.WriteLine($"Connection string created. {strConn}");
 
             JWeakRef jWeak = newWeakGlobalRef(jEnv, jObj);
