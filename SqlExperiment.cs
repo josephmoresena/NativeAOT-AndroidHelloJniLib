@@ -17,6 +17,15 @@ namespace HelloJniLib
 
         internal static async void ConnectAsync(JavaVMRef vm, JWeakRef jWeak, String strConn)
         {
+            await Task.Delay(100);
+            Console.WriteLine("Start async method.");
+
+            String result = await GetResultAsync(strConn);
+            await Task.Run(() => PrintResult(vm, jWeak, result));
+        }
+
+        private static async Task<String> GetResultAsync(String strConn)
+        {
             String result;
             try
             {
@@ -37,7 +46,7 @@ namespace HelloJniLib
                     result = ex.Message;
             }
 
-            await Task.Run(() => PrintResult(vm, jWeak, result));
+            return result;
         }
 
         private static void PrintResult(JavaVMRef vm, JWeakRef jWeak, String result)
@@ -88,7 +97,6 @@ namespace HelloJniLib
                 detachCurrentThread(vm);
             }
         }
-
         private static JMethodId GetMethodId(JEnvRef jEnv, GetMethodIdDelegate getMethod, JClassLocalRef jClass)
         {
             ReadOnlySpan<Byte> methodName = CString.GetBytes(printSqlResultName);
