@@ -15,8 +15,8 @@
 		<InvariantGlobalization>true</InvariantGlobalization>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="8.0.0-*" />
-		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="0.1.7" />
+    <PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="0.1.7.1" />
+		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22370.2" />
 		<!--JNI libs needs to be compiled with -z noexecstack-->
 		<LinkerArg Condition="$([MSBuild]::IsOSPlatform('Linux'))" Include="-z noexecstack" />
 	</ItemGroup>

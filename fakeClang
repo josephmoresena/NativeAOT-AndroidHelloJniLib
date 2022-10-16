@@ -8,4 +8,7 @@ fixedArgs=${rawArgs//$ldFix/}
 fixedArgs=${fixedArgs//$globalizationPath/}
 fixedArgs=${fixedArgs//$securityPath/}
 fixedArgs=${fixedArgs//$sslPath/}
+
+echo $RealCppCompilerAndLinker $fixedArgs
+
 $RealCppCompilerAndLinker $fixedArgs
