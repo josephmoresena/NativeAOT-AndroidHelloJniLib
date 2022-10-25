@@ -27,12 +27,24 @@
 		<!--2022_08_02 00:40-->
 		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22401.9" />-->
 		<!--2022_08_02 04:50 OK -->
-		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22402.1" />
-		<!--2022_08_02 23:32 -->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22402.1" />-->
+		<!--2022_08_02 23:32 (Ago 2)-->
 		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22402.10" />-->
-		<!--2022_08_09 23:05-->
+		<!--2022_08_09 23:05 (Ago 2)-->
 		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22409.8" />-->
-		<!--2022_08_16 16:33 (ILC)-->
+		<!--2022_08_11 00:28 (Ago 2)-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22410.9" />-->
+		<!--2022_08_15 01:40 (Ago 2)-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22414.6" />-->
+		<!--2022_08_15 05:42 OK (Ago 2)-->
+		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22415.1" />
+		<!--2022_08_15 19:20-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22415.10" />-->
+		<!--2022_08_16 03:54-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22416.1" />-->
+		<!--2022_08_16 16:46 (ILC)-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22416.3" />-->
+		<!--2022_08_16 16:33-->
 		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22416.5" />-->
 		<!--2022_08_16 20:32-->
 		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22416.11" />-->
