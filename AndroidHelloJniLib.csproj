@@ -15,8 +15,31 @@
 		<InvariantGlobalization>true</InvariantGlobalization>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="8.0.0-*" />
-		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="0.1.7" />
+		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="0.1.7.1" />
+		<!--2022_07_13-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22363.1" />-->
+		<!--2022_07_29-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22379.6" />-->
+		<!--2022_08_01 00:53-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22381.5" />-->
+		<!--2022_08_01 05:57-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22401.1" />-->
+		<!--2022_08_02 00:40-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22401.9" />-->
+		<!--2022_08_02 04:50 OK -->
+		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22402.1" />
+		<!--2022_08_02 23:32 -->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22402.10" />-->
+		<!--2022_08_09 23:05-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22409.8" />-->
+		<!--2022_08_16 16:33 (ILC)-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22416.5" />-->
+		<!--2022_08_16 20:32-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22416.11" />-->
+		
+		<!--2022_08_26 20:04-->
+		<!--<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="7.0.0-rc.1.22426.10" />-->
+		
 		<!--JNI libs needs to be compiled with -z noexecstack-->
 		<LinkerArg Condition="$([MSBuild]::IsOSPlatform('Linux'))" Include="-z noexecstack" />
 	</ItemGroup>
