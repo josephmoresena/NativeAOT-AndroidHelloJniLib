@@ -1,6 +1,6 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0</TargetFramework>
+		<TargetFramework>net7.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>true</Optimize>
@@ -13,10 +13,12 @@
 		<IsAndroid Condition="'$(IsAndroid)'=='false'">$(RealRuntimeIdentifier.ToLower().StartsWith('linux-bionic'))</IsAndroid>
 		<TrimMode>Link</TrimMode>
 		<InvariantGlobalization>true</InvariantGlobalization>
+		<PublishAot>true</PublishAot>
 	</PropertyGroup>
+	
 	<ItemGroup>
+		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="*" />	
 		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="8.0.0-*" />
-		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="0.1.7" />
 		<!--JNI libs needs to be compiled with -z noexecstack-->
 		<LinkerArg Condition="$([MSBuild]::IsOSPlatform('Linux'))" Include="-z noexecstack" />
 	</ItemGroup>
@@ -37,6 +39,14 @@
 		<CrossCompileArch />
 		<CrossCompileArch Condition="$(CrossCompileRid.EndsWith('-x64'))">x86_64</CrossCompileArch>
 		<CrossCompileArch Condition="$(CrossCompileRid.EndsWith('-arm64'))">aarch64</CrossCompileArch>
+		
+		<ObjCopyName Condition="'$(ObjCopyName)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/linux-x86_64/bin/$(CrossCompileArch)-linux-android-objcopy</ObjCopyName>
+		<CppCompilerAndLinker Condition="'$(CppCompilerAndLinker)' == ''">./android_fake_clang</CppCompilerAndLinker>
+		<SysRoot Condition="'$(SysRoot)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/linux-x86_64/sysroot</SysRoot>
+		<IlcSdkPath Condition="'$(IlcSdkPath)' == ''">$(RUNTIME_REPO)/artifacts/bin/coreclr/Android.arm64.Release/aotsdk/</IlcSdkPath>
+		<IlcFrameworkPath Condition="'$(IlcFrameworkPath)' == ''">$(RUNTIME_REPO)/artifacts/bin/runtime/net7.0-Android-Release-arm64/</IlcFrameworkPath>
+		<IlcFrameworkNativePath Condition="'$(IlcFrameworkNativePath)' == ''">$(RUNTIME_REPO)/artifacts/bin/runtime/net7.0-Android-Release-arm64/</IlcFrameworkNativePath>
+	
 		<RuntimeIlcPackageName>runtime.$(OSIdentifier)-arm64.Microsoft.DotNet.ILCompiler</RuntimeIlcPackageName>
 		<!--Hack for removing non-android static libraries into the rsp file-->
 		<RspPatch>'s/--directpinvoke:libSystem.Globalization.Native\n//g;s/--directpinvoke:libSystem.Net.Security.Native\n//g;s/--directpinvoke:libSystem.Security.Cryptography.Native.OpenSsl\n//g;s/--Ot\n//g;'</RspPatch>
@@ -47,8 +57,6 @@
 		<LinkerArg Condition="'$(CrossCompileArch)' != 'x86_64'" Include="--target=$(CrossCompileArch)-linux-android21" />
 		<!--Adds System.Security.Cryptography.Native.Android to rsp file and linker-->
 		<!--<NetCoreAppNativeLibrary Include="System.Security.Cryptography.Native.OpenSsl" />-->
-		<!--<NativeLibrary Include="libcrypto.a" />
-		<NativeLibrary Include="libssl.a" />-->
 	</ItemGroup>
 	<!--This target intercept the ilc invocation in order to remove invalid lines for Android Systems-->
 	<Target Name="FixCompilation" Condition="$(IsAndroid) == 'true'" AfterTargets="WriteIlcRspFileForCompilation" BeforeTargets="IlcCompile">
