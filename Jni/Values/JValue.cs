@@ -1,6 +1,6 @@
 ﻿using System.Runtime.CompilerServices;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Values
 {
@@ -28,7 +28,7 @@ namespace HelloJniLib.Jni.Values
             Byte[] result = new Byte[Size];
             for (Int32 i = 0; i < source.Length; i++)
                 result[i] = source[i];
-            return result.AsValue<JValue>();
+            return result.ToValue<JValue>();
         }
 
         private static IsDefaultDelegate GetIsDefault() => Environment.Is64BitProcess ? DefaultLong : Default;
@@ -38,6 +38,6 @@ namespace HelloJniLib.Jni.Values
             && jValue._value4 == default;
 
         private static Boolean DefaultLong(in JValue jValue) =>
-            Unsafe.AsRef(jValue).AsReferenceOf<JValue, Int64>() == default;
+            Unsafe.AsRef(jValue).Transform<JValue, Int64>() == default;
     }
 }

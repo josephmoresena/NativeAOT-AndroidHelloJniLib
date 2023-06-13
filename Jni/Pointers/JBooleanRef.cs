@@ -2,7 +2,7 @@
 
 using HelloJniLib.Jni.Primitives;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Pointers
 {
@@ -19,6 +19,6 @@ namespace HelloJniLib.Jni.Pointers
             => this._value = jBoolean.HasValue ? GetJBooleanRef(jBoolean.Value) : IntPtr.Zero;
 
         private static IntPtr GetJBooleanRef(Boolean value)
-            => value ? Unsafe.AsRef(JBooleanResultTrue).AsIntPtr() : Unsafe.AsRef(JBooleanResultFalse).AsIntPtr();
+            => value ? Unsafe.AsRef(JBooleanResultTrue).GetUnsafeIntPtr() : Unsafe.AsRef(JBooleanResultFalse).GetUnsafeIntPtr();
     }
 }

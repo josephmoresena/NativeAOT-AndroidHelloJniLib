@@ -5,7 +5,7 @@ using HelloJniLib.Jni.Pointers;
 using HelloJniLib.Jni.References;
 using HelloJniLib.Jni.Values;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib
 {
@@ -30,16 +30,22 @@ namespace HelloJniLib
             DateTime call = DateTime.Now;
             count++;
 
+            String result =
+                "Hello from JNI! Compiled with NativeAOT." + Environment.NewLine
+                + GetRuntimeInformation(call);
+
+            return result.AsSpan().WithSafeFixed(jEnv, CreateString);
+        }
+
+        private static JStringLocalRef CreateString(in IReadOnlyFixedContext<Char> ctx, JEnvRef jEnv)
+        {
             JEnvValue value = jEnv.Environment;
             ref JNativeInterface jInterface = ref value.Functions;
 
             IntPtr newStringPtr = jInterface.NewStringPointer;
-            NewStringDelegate newString = newStringPtr.AsDelegate<NewStringDelegate>();
+            NewStringDelegate newString = newStringPtr.GetUnsafeDelegate<NewStringDelegate>();
 
-            String result =
-                "Hello from JNI! Compiled with NativeAOT." + Environment.NewLine
-                + GetRuntimeInformation(call);
-            return newString(jEnv, result.AsSpan().AsIntPtr(), result.Length);
+            return newString(jEnv, ctx.Pointer, ctx.Values.Length);
         }
 
         private static String GetRuntimeInformation(DateTime call)

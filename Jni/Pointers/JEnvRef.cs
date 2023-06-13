@@ -1,6 +1,6 @@
 ﻿using HelloJniLib.Jni.Values;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Pointers
 {
@@ -16,7 +16,7 @@ namespace HelloJniLib.Jni.Pointers
         #endregion
 
         #region Public Properties
-        internal readonly ref JEnvValue Environment => ref this._value.AsReference<JEnvValue>();
+        internal readonly ref JEnvValue Environment => ref this._value.GetUnsafeReference<JEnvValue>();
         #endregion
 
         #region Public Methods

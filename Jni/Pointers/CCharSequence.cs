@@ -1,6 +1,6 @@
 ﻿using System.Runtime.InteropServices;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Pointers
 {
@@ -12,8 +12,8 @@ namespace HelloJniLib.Jni.Pointers
 
         #region Operators
         public static implicit operator CCharSequence(IntPtr value) => new(value);
-        public static implicit operator CCharSequence(Span<Byte> span) => new(span.AsIntPtr());
-        public static implicit operator CCharSequence(ReadOnlySpan<Byte> readonlySpan) => new(readonlySpan.AsIntPtr());
+        public static implicit operator CCharSequence(Span<Byte> span) => new(span.GetUnsafeIntPtr());
+        public static implicit operator CCharSequence(ReadOnlySpan<Byte> readonlySpan) => new(readonlySpan.GetUnsafeIntPtr());
 
         public static CCharSequence operator ++(CCharSequence a) => new(a._value + sizeof(Byte));
         public static CCharSequence operator --(CCharSequence a) => new(a._value - sizeof(Byte));

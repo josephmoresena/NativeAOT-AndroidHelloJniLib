@@ -1,6 +1,6 @@
 ﻿using HelloJniLib.Jni.Values;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Pointers
 {
@@ -12,7 +12,7 @@ namespace HelloJniLib.Jni.Pointers
 
         #region Operators
         public static implicit operator JNativeMethodSequence(IntPtr value) => new(value);
-        public static implicit operator JNativeMethodSequence(ReadOnlySpan<JNativeMethod> readonlySpan) => new(readonlySpan.AsIntPtr());
+        public static implicit operator JNativeMethodSequence(ReadOnlySpan<JNativeMethod> readonlySpan) => new(readonlySpan.GetUnsafeIntPtr());
 
         public static JNativeMethodSequence operator ++(JNativeMethodSequence a) => new(a._value + JValue.Size);
         public static JNativeMethodSequence operator --(JNativeMethodSequence a) => new(a._value - JValue.Size);

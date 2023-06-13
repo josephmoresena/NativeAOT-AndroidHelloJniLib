@@ -1,4 +1,4 @@
-﻿using Rxmxnx.PInvoke.Extensions;
+﻿using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Primitives
 {
@@ -6,7 +6,7 @@ namespace HelloJniLib.Jni.Primitives
     {
         internal static readonly Type Type = typeof(JChar);
 
-        public static readonly CString Signature = "C";
+        public static readonly CString Signature = (CString)"C";
 
         private readonly Char _value;
 

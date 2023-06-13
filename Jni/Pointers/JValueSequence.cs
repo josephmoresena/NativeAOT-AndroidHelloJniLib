@@ -1,6 +1,6 @@
 ﻿using HelloJniLib.Jni.Values;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Internal.Pointers
 {
@@ -9,7 +9,7 @@ namespace HelloJniLib.Jni.Internal.Pointers
         private readonly IntPtr _value;
 
         private JValueSequence(IntPtr value) => this._value = value;
-        internal JValueSequence(ReadOnlySpan<JValue> readonlySpan) : this(readonlySpan.AsIntPtr()) { }
+        internal JValueSequence(ReadOnlySpan<JValue> readonlySpan) : this(readonlySpan.GetUnsafeIntPtr()) { }
 
         #region Operators
         public static implicit operator JValueSequence(IntPtr value) => new(value);
