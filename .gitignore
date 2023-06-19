@@ -335,3 +335,4 @@ ASALocalRun/
 *.so
 *.dll
 *.dwo
+.DS_Store
