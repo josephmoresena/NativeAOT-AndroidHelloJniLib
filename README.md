@@ -30,10 +30,9 @@ The following commands assume:
 
 #### Environment Parameters 
 * ObjCopyName: Path of NDK ObjCopy. This is needed in order to use StripSymbols MSBuild parameter.
-* RealCppCompilerAndLinker: NDK linker tool. This is needed to apply a hack for excluding the missing libraries at linking process.
 
 #### MSBuild Parameters
-* CppCompilerAndLinker: Linker. The fakeClang is just an script that invokes the real NDK Clang executable.
+* CppCompilerAndLinker: Linker. The android_fake_clang is just an script that invokes the real NDK Clang executable.
 * SysRoot: Sysroot path from NDK. Needed for NDK compilation.
 * RemoveSections: Hack to remove __init and __fini symbols from .exports file.
 * AssemblyName: In order to produce a .so file with given name.
