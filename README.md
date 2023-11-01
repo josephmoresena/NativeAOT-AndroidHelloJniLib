@@ -19,7 +19,7 @@ Use the following command to build library.
 	    {PATH_TO_BFLAT}bflat build -r BFlatSupport/Rxmxnx.PInvoke.Extensions.dll --no-stacktrace-data --no-globalization --no-exception-messages -Os --no-pie --separate-symbols --os:linux --arch:arm64 --libc:bionic -o:libhello-jni.so
 
 # NET SDK 8.0
-With new .NET 8.0 SDK we now are able to compile NativeAOT android binaries using linux-bionic RID.
+With new .NET 8.0 SDK we are now able to compile NativeAOT android binaries using linux-bionic RID.
 
 ### How to build it
 This process was tested for android-arm64 (linux-bionic-arm64) compilation but may works for android-x64 (linux-bionic-x64) too. <br/>
