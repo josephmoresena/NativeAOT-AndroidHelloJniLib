@@ -45,12 +45,7 @@
     
 	<!--Following blocks are exclusive for Android building-->
 	<PropertyGroup Condition="$(IsAndroid) == 'true'">
-		<!--Hack for avoid passing linux-gnu as target parameter on NDK linker invocation-->
-		<CrossCompileRid />
-		<CrossCompileRid Condition="'$(TargetOS)' != 'OSX' and !$(RuntimeIdentifier.EndsWith('-$(OSHostArch)'))">$(RuntimeIdentifier)</CrossCompileRid>
-		<CrossCompileArch />
-		<CrossCompileArch Condition="$(CrossCompileRid.EndsWith('-x64'))">x86_64</CrossCompileArch>
-		<CrossCompileArch Condition="$(CrossCompileRid.EndsWith('-arm64'))">aarch64</CrossCompileArch>
+        <!--Use ndk-sample expected library name -->
 		<CppCompilerAndLinker Condition="$(IsWindowsHost) == 'true'">./android_fake_clang.cmd</CppCompilerAndLinker>
 		<CppCompilerAndLinker Condition="$(IsLinuxHost) == 'true'">./android_fake_clang.sh</CppCompilerAndLinker>
 		<CppCompilerAndLinker Condition="$(IsOSXHost) == 'true'">./android_fake_clang.command</CppCompilerAndLinker>
@@ -65,8 +60,8 @@
     
 	<ItemGroup Condition="$(IsAndroid) == 'true'">
 		<!--Hack for passing a valid target argument on NDK linker invocation-->
-		<LinkerArg Condition="'$(CrossCompileArch)' == 'x86_64'" Include="--target=$(CrossCompileArch)-android21" />
-		<LinkerArg Condition="'$(CrossCompileArch)' != 'x86_64'" Include="--target=$(CrossCompileArch)-linux-android21" />
+		<LinkerArg Condition="$(RuntimeIdentifier.ToLower().EndsWith('-x64'))" Include="--target=x86_64-linux-android21" />
+		<LinkerArg Condition="$(RuntimeIdentifier.ToLower().EndsWith('-arm64'))" Include="--target=aarch64-linux-android21" />
 	</ItemGroup>
     
 	<ItemGroup Condition="$(IsAndroid) == 'true' And $(UseLibCSections) == 'true'">
