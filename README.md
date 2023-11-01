@@ -18,12 +18,15 @@ Use the following command to build library.
 
 	    {PATH_TO_BFLAT}bflat build -r BFlatSupport/Rxmxnx.PInvoke.Extensions.dll --no-stacktrace-data --no-globalization --no-exception-messages -Os --no-pie --separate-symbols --os:linux --arch:arm64 --libc:bionic -o:libhello-jni.so
 
+# NET SDK 8.0
+With new .NET 8.0 SDK we now are able to compile NativeAOT android binaries using linux-bionic RID.
+
 ### How to build it
-This process was tested for android-arm64 compilation but may works for android-x64 too. <br/>
+This process was tested for android-arm64 (linux-bionic-arm64) compilation but may works for android-x64 (linux-bionic-x64) too. <br/>
 The following commands assume:
  * ANDROID_NDK_ROOT envirionment variable: Full path to NDK. Used to preconfigure CppCompilerAndLinker, ObjCopyName and SysRoot.
  * Android NDK version is r26b.
- * Target architecture is linux-bionic-arm64 or linux-bionic-x64.
+ * Target architecture is arm64.
  * Host architecture is windows, linux or macOS x64.
 
 	   dotnet publish -r linux-bionic-arm64 -p:DisableUnsupportedError=true -p:PublishAotUsingRuntimePack=true -p:AssemblyName=libhello-jni -p:RemoveSections=true \
@@ -39,8 +42,8 @@ The following commands assume:
 * UseLibCSections: In order to use __libc_init and __libc_fini as exported __init and __fini symbols.
 
 ### Dependencies
-The native Android binary produced may has a dependency with libc++_shared.so. So you need include it along with the generated binary. <br/>
-You can get it for arm64 from:
+The native Android binary produced may has a dependency with libc++_shared.so. So you may need include it along with the generated binary. <br/>
+You can get it from:
 
 	/toolchains/llvm/prebuilt/{windows/linux/darwin}-x86_64/sysroot/usr/lib/{aarch64/x86_x64}-linux-android
 
