@@ -7,9 +7,9 @@ using Rxmxnx.PInvoke;
 namespace HelloJniLib.Jni.Pointers
 {
     public readonly struct JBooleanRef
-    {
-        private const Int32 JBooleanResultFalse = 0;
-        private const Int32 JBooleanResultTrue = 1;
+    {   
+        private static readonly Int32 JBooleanResultFalse = 0;
+        private static readonly Int32 JBooleanResultTrue = 1;
 
 #pragma warning disable IDE0052
         private readonly IntPtr _value;
@@ -19,6 +19,6 @@ namespace HelloJniLib.Jni.Pointers
             => this._value = jBoolean.HasValue ? GetJBooleanRef(jBoolean.Value) : IntPtr.Zero;
 
         private static IntPtr GetJBooleanRef(Boolean value)
-            => value ? Unsafe.AsRef(JBooleanResultTrue).GetUnsafeIntPtr() : Unsafe.AsRef(JBooleanResultFalse).GetUnsafeIntPtr();
+            => value ? Unsafe.AsRef(in JBooleanResultTrue).GetUnsafeIntPtr() : Unsafe.AsRef(in JBooleanResultFalse).GetUnsafeIntPtr();
     }
 }

@@ -1,31 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>true</Optimize>
 		<OutputType>Library</OutputType>
 		<NativeLib>Shared</NativeLib>
 		<SelfContained>true</SelfContained>
-		<!--This is needed in order to build successfully Android binaries-->
-		<RealRuntimeIdentifier>$(RuntimeIdentifier)</RealRuntimeIdentifier>
-		<IsAndroid>$(RealRuntimeIdentifier.ToLower().StartsWith('android'))</IsAndroid>
-		<IsAndroid Condition="'$(IsAndroid)'=='false'">$(RealRuntimeIdentifier.ToLower().StartsWith('linux-bionic'))</IsAndroid>
 		<TrimMode>Link</TrimMode>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<PublishAot>true</PublishAot>
 	</PropertyGroup>
+    
+	<PropertyGroup>
+		<!--This is needed in order to build successfully Android binaries-->
+		<IsAndroid>$(RuntimeIdentifier.ToLower().StartsWith('android'))</IsAndroid>
+		<IsAndroid Condition="'$(IsAndroid)'=='false'">$(RuntimeIdentifier.ToLower().StartsWith('linux-bionic'))</IsAndroid>
+		<IsWindowsHost>$([MSBuild]::IsOSPlatform('Windows'))</IsWindowsHost>
+		<IsLinuxHost>$([MSBuild]::IsOSPlatform('Linux'))</IsLinuxHost>
+		<IsOSXHost>$([MSBuild]::IsOSPlatform('OSX'))</IsOSXHost>
+	</PropertyGroup>
+    
 	<ItemGroup>
 	  <Compile Remove="BFlatSupport\*.cs" />
 	  <None Remove="BFlatSupport\*" />
 	</ItemGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="*" />	
-		<PackageReference Include="Microsoft.DotNet.ILCompiler; runtime.linux-x64.Microsoft.DotNet.ILCompiler" Version="8.0.0-*" />
+		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="*" />
 		<!--JNI libs needs to be compiled with -z noexecstack-->
-		<LinkerArg Condition="$([MSBuild]::IsOSPlatform('Linux'))" Include="-z noexecstack" />
+		<LinkerArg Condition="$(LinuxHost) == 'true' Or $(IsAndroid) == 'true'" Include="-z noexecstack" />
 	</ItemGroup>
+    
 	<PropertyGroup>
 		<TrimUnusedDependencies>true</TrimUnusedDependencies>
 		<RootAllApplicationAssemblies>false</RootAllApplicationAssemblies>
@@ -35,6 +42,7 @@
 		<IlcOptimizationPreference>Speed</IlcOptimizationPreference>
 		<IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
 	</PropertyGroup>
+    
 	<!--Following blocks are exclusive for Android building-->
 	<PropertyGroup Condition="$(IsAndroid) == 'true'">
 		<!--Hack for avoid passing linux-gnu as target parameter on NDK linker invocation-->
@@ -43,50 +51,41 @@
 		<CrossCompileArch />
 		<CrossCompileArch Condition="$(CrossCompileRid.EndsWith('-x64'))">x86_64</CrossCompileArch>
 		<CrossCompileArch Condition="$(CrossCompileRid.EndsWith('-arm64'))">aarch64</CrossCompileArch>
-		
-		<ObjCopyName Condition="'$(ObjCopyName)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/linux-x86_64/bin/$(CrossCompileArch)-linux-android-objcopy</ObjCopyName>
-		<CppCompilerAndLinker Condition="'$(CppCompilerAndLinker)' == ''">./android_fake_clang</CppCompilerAndLinker>
-		<SysRoot Condition="'$(SysRoot)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/linux-x86_64/sysroot</SysRoot>
-		<IlcSdkPath Condition="'$(IlcSdkPath)' == ''">$(RUNTIME_REPO)/artifacts/bin/coreclr/Android.arm64.Release/aotsdk/</IlcSdkPath>
-		<IlcFrameworkPath Condition="'$(IlcFrameworkPath)' == ''">$(RUNTIME_REPO)/artifacts/bin/runtime/net7.0-Android-Release-arm64/</IlcFrameworkPath>
-		<IlcFrameworkNativePath Condition="'$(IlcFrameworkNativePath)' == ''">$(RUNTIME_REPO)/artifacts/bin/runtime/net7.0-Android-Release-arm64/</IlcFrameworkNativePath>
-	
-		<RuntimeIlcPackageName>runtime.$(OSIdentifier)-arm64.Microsoft.DotNet.ILCompiler</RuntimeIlcPackageName>
-		<!--Hack for removing non-android static libraries into the rsp file-->
-		<RspPatch>'s/--directpinvoke:libSystem.Globalization.Native\n//g;s/--directpinvoke:libSystem.Net.Security.Native\n//g;s/--directpinvoke:libSystem.Security.Cryptography.Native.OpenSsl\n//g;s/--Ot\n//g;'</RspPatch>
+		<CppCompilerAndLinker Condition="$(IsWindowsHost) == 'true'">./android_fake_clang.cmd</CppCompilerAndLinker>
+		<CppCompilerAndLinker Condition="$(IsLinuxHost) == 'true'">./android_fake_clang.sh</CppCompilerAndLinker>
+		<CppCompilerAndLinker Condition="$(IsOSXHost) == 'true'">./android_fake_clang.command</CppCompilerAndLinker>
+		<NdkHost Condition="$(IsWindowsHost) == 'true'">windows-x86_64</NdkHost>
+		<NdkHost Condition="$(IsLinuxHost) == 'true'">linux-x86_64</NdkHost>
+		<NdkHost Condition="$(IsOSXHost) == 'true'">darwin-x86_64</NdkHost>
+		<ObjCopyName Condition="'$(ObjCopyName)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/$(NdkHost)/bin/llvm-objcopy</ObjCopyName>
+		<SysRoot Condition="'$(SysRoot)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/$(NdkHost)/sysroot</SysRoot>
+		<!--Hack for removing init and fini sections into the exports file-->
+		<ExportsPatch>'s/global: _init; _fini;/global: /g;'</ExportsPatch>
 	</PropertyGroup>
+    
 	<ItemGroup Condition="$(IsAndroid) == 'true'">
 		<!--Hack for passing a valid target argument on NDK linker invocation-->
 		<LinkerArg Condition="'$(CrossCompileArch)' == 'x86_64'" Include="--target=$(CrossCompileArch)-android21" />
 		<LinkerArg Condition="'$(CrossCompileArch)' != 'x86_64'" Include="--target=$(CrossCompileArch)-linux-android21" />
-		<!--Adds System.Security.Cryptography.Native.Android to rsp file and linker-->
-		<!--<NetCoreAppNativeLibrary Include="System.Security.Cryptography.Native.OpenSsl" />-->
 	</ItemGroup>
-	<!--This target intercept the ilc invocation in order to remove invalid lines for Android Systems-->
-	<Target Name="FixCompilation" Condition="$(IsAndroid) == 'true'" AfterTargets="WriteIlcRspFileForCompilation" BeforeTargets="IlcCompile">
-		<!--Reads as lines the generated rsp file-->
-		<ReadLinesFromFile File="%(ManagedBinary.IlcRspFile)">
-			<Output TaskParameter="Lines" PropertyName="RspLines" />
+    
+	<ItemGroup Condition="$(IsAndroid) == 'true' And $(UseLibCSections) == 'true'">
+		<!--Hack for passing a valid target argument on NDK linker invocation-->
+		<LinkerArg Include="-Wl,--defsym,_init=__libc_init" />
+		<LinkerArg Include="-Wl,--defsym,_fini=__libc_fini" />
+	</ItemGroup>
+    
+	<Target Name="RemoveSections" Condition="$(IsAndroid) == 'true' And $(RemoveSections) == 'true'" AfterTargets="IlcCompile" BeforeTargets="LinkNative">
+		<!--Reads as lines the generated exports file-->
+		<ReadLinesFromFile File="$(ExportsFile)">
+			<Output TaskParameter="Lines" PropertyName="ExportsLines" />
 		</ReadLinesFromFile>
-		<!--Gets a single text from the rsp lines-->
+		<!--Gets a single text from the exports lines-->
 		<PropertyGroup>
-			<RspText Condition="$(RspLines) != ''">@(RspLines)</RspText>
+			<ExportsText Condition="$(ExportsLines) != ''">@(ExportsLines)</ExportsText>
 		</PropertyGroup>
 		<!--The sed tool is used as invalid lines remover-->
-		<Exec Command="sed -i -z $(RspPatch) %(ManagedBinary.IlcRspFile)" />
+		<Exec Command="sed -i -z $(ExportsPatch) $(ExportsFile)" />
 	</Target>
-	<!--This target intercepts the linker invocation in order to avoid an invalid target parameter for Android Systems-->
-	<Target Name="FixArchitecture" Condition="$(IsAndroid) == 'true'" AfterTargets="IlcCompile" BeforeTargets="SetupOSSpecificProps">
-		<!--We need NDK linker invocation to be as a non-cross compilation-->
-		<PropertyGroup>
-			<RuntimeIdentifier>linux-$(OSHostArch)</RuntimeIdentifier>
-		</PropertyGroup>
-	</Target>
-	<!--This target intercepts the end of linking process for Android Systems-->
-	<Target Name="FixRid" Condition="$(IsAndroid) == 'true'" AfterTargets="LinkNative">
-		<!--Once NDK linker ends, we need to restore RuntimeIdentifier-->
-		<PropertyGroup>
-			<RuntimeIdentifier>$(RealRuntimeIdentifier)</RuntimeIdentifier>
-		</PropertyGroup>
-	</Target>
+    
 </Project>

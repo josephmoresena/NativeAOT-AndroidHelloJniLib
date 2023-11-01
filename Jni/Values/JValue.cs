@@ -23,7 +23,7 @@ namespace HelloJniLib.Jni.Values
 
         public Boolean IsDefault => isDefault(this);
 
-        public static JValue Create(ReadOnlySpan<Byte> source)
+        public static JValue Create(in ReadOnlySpan<Byte> source)
         {
             Byte[] result = new Byte[Size];
             for (Int32 i = 0; i < source.Length; i++)
@@ -38,6 +38,6 @@ namespace HelloJniLib.Jni.Values
             && jValue._value4 == default;
 
         private static Boolean DefaultLong(in JValue jValue) =>
-            Unsafe.AsRef(jValue).Transform<JValue, Int64>() == default;
+            Unsafe.AsRef(in jValue).Transform<JValue, Int64>() == default;
     }
 }
