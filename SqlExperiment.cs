@@ -6,14 +6,14 @@ using HelloJniLib.Jni.Values;
 
 using Microsoft.Data.SqlClient;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib
 {
     internal static class SqlExperiment
     {
-        private static readonly CString printSqlResultName = "printSqlResult";
-        private static readonly CString printSqlResultSignature = "(Ljava/lang/String;)V";
+        private static readonly CString printSqlResultName = new(() =>"printSqlResult"u8);
+        private static readonly CString printSqlResultSignature = new("(Ljava/lang/String;)V"u8);
 
         internal static async void ConnectAsync(JavaVMRef vm, JWeakRef jWeak, String strConn)
         {
@@ -29,21 +29,18 @@ namespace HelloJniLib
             String result;
             try
             {
-                using SqlConnection conn = new(strConn);
+                await using SqlConnection conn = new(strConn);
                 Console.WriteLine("Connection created.");
                 await conn.OpenAsync();
                 Console.WriteLine("Open connection.");
-                using SqlCommand comm = new("SELECT @@VERSION;", conn);
+                await using SqlCommand comm = new("SELECT @@VERSION;", conn);
                 Console.WriteLine("Command created.");
-                result = comm.ExecuteScalar().ToString();
+                result = comm.ExecuteScalar()?.ToString();
                 Console.WriteLine("Command executed.");
             }
             catch (Exception ex)
             {
-                if (!ExportedMethods.DisabledReflection)
-                    result = ex.ToString();
-                else
-                    result = ex.Message;
+                result = !ExportedMethods.DisabledReflection ? ex.ToString() : ex.Message;
             }
 
             return result;
@@ -54,16 +51,16 @@ namespace HelloJniLib
             Console.WriteLine(result);
             JEnvRef jEnv = default;
             JavaVMValue vmValue = vm.VirtualMachine;
-            ref JInvokeInterface jVMInterface = ref vmValue.Functions;
+            ref JInvokeInterface jVmInterface = ref vmValue.Functions;
 
             AttachCurrentThreadDelegate attachCurrentThread =
-                jVMInterface.AttachCurrentThreadPointer.AsDelegate<AttachCurrentThreadDelegate>();
+                jVmInterface.AttachCurrentThreadPointer.GetUnsafeDelegate<AttachCurrentThreadDelegate>()!;
             DetachCurrentThreadDelegate detachCurrentThread =
-                jVMInterface.DetachCurrentThreadPointer.AsDelegate<DetachCurrentThreadDelegate>();
+                jVmInterface.DetachCurrentThreadPointer.GetUnsafeDelegate<DetachCurrentThreadDelegate>()!;
 
             attachCurrentThread(vm, ref jEnv, new()
             {
-                Version = 0x00010006
+                Version = 0x00010006,
             });
 
             try
@@ -72,20 +69,18 @@ namespace HelloJniLib
                 ref JNativeInterface jInterface = ref value.Functions;
 
                 GetObjectClassDelegate getObjectClass =
-                    jInterface.GetObjectClassPointer.AsDelegate<GetObjectClassDelegate>();
+                    jInterface.GetObjectClassPointer.GetUnsafeDelegate<GetObjectClassDelegate>()!;
                 GetMethodIdDelegate getMethod =
-                    jInterface.GetMethodIdPointer.AsDelegate<GetMethodIdDelegate>();
+                    jInterface.GetMethodIdPointer.GetUnsafeDelegate<GetMethodIdDelegate>()!;
                 CallVoidMethodADelegate callVoidMethodA =
-                    jInterface.CallVoidMethodAPointer.AsDelegate<CallVoidMethodADelegate>();
-                NewStringDelegate newString =
-                    jInterface.NewStringPointer.AsDelegate<NewStringDelegate>();
+                    jInterface.CallVoidMethodAPointer.GetUnsafeDelegate<CallVoidMethodADelegate>()!;
                 DeleteLocalRefDelegate deleteLocalRef =
-                    jInterface.DeleteLocalRefPointer.AsDelegate<DeleteLocalRefDelegate>();
+                    jInterface.DeleteLocalRefPointer.GetUnsafeDelegate<DeleteLocalRefDelegate>()!;
 
                 JObjectLocalRef jObj = new(jWeak);
                 JClassLocalRef jClass = getObjectClass(jEnv, jObj);
-                JMethodId methodId = GetMethodId(jEnv, getMethod, jClass);
-                JStringLocalRef jString = ExportedMethods.CreateJString(result, jEnv, newString);
+                JMethodId methodId = SqlExperiment.GetMethodId(jEnv, getMethod, jClass);
+                JStringLocalRef jString = result.AsSpan().WithSafeFixed(jEnv, ExportedMethods.CreateString);
 
                 CallMethod(jEnv, callVoidMethodA, jObj, methodId, jString);
 
@@ -99,12 +94,12 @@ namespace HelloJniLib
         }
         private static JMethodId GetMethodId(JEnvRef jEnv, GetMethodIdDelegate getMethod, JClassLocalRef jClass)
         {
-            ReadOnlySpan<Byte> methodName = CString.GetBytes(printSqlResultName);
-            ReadOnlySpan<Byte> methodSignature = CString.GetBytes(printSqlResultSignature);
+            ReadOnlySpan<Byte> methodName = printSqlResultName;
+            ReadOnlySpan<Byte> methodSignature = printSqlResultSignature;
             JMethodId methodId = getMethod(jEnv, jClass, methodName, methodSignature);
             return methodId;
         }
-        private static void CallMethod(JEnvRef jEnv, CallVoidMethodADelegate callVoidMethodA, JObjectLocalRef jObj, JMethodId methodId, in JStringLocalRef jString)
+        private static void CallMethod(JEnvRef jEnv, CallVoidMethodADelegate callVoidMethodA, JObjectLocalRef jObj, JMethodId methodId, JStringLocalRef jString)
         {
             Span<JValue> parameters = stackalloc JValue[1];
             parameters[0] = JValue.Create(jString.AsBytes());

@@ -28,6 +28,7 @@
 	</ItemGroup>
 	
 	<ItemGroup>
+		<PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.2" />
 		<PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="*" />
 		<!--JNI libs needs to be compiled with -z noexecstack-->
 		<LinkerArg Condition="$(LinuxHost) == 'true' Or $(IsAndroid) == 'true'" Include="-z noexecstack" />
