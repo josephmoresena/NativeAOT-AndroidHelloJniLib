@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 25.0.1705.6
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AndroidHelloJniLib", "AndroidHelloJniLib.csproj", "{CC572308-FA66-47E7-803B-3C21FFE00670}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CC572308-FA66-47E7-803B-3C21FFE00670}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC572308-FA66-47E7-803B-3C21FFE00670}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC572308-FA66-47E7-803B-3C21FFE00670}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC572308-FA66-47E7-803B-3C21FFE00670}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {689053B9-5FEE-4CEE-9A8D-512FC0624C95}
+	EndGlobalSection
+EndGlobal

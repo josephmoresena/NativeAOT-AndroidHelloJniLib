@@ -1,6 +1,6 @@
 ﻿using HelloJniLib.Jni.Pointers;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Primitives
 {
@@ -10,7 +10,7 @@ namespace HelloJniLib.Jni.Primitives
         private static readonly Byte trueByte = 1;
         private static readonly Byte falseByte = 2;
 
-        public static readonly CString Signature = "Z";
+        public static readonly CString Signature = (CString)"Z";
 
         private readonly Byte _value;
         private Boolean Value => this._value == trueByte;
