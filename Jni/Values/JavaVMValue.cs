@@ -1,4 +1,4 @@
-﻿using Rxmxnx.PInvoke.Extensions;
+﻿using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Values
 {
@@ -14,7 +14,7 @@ namespace HelloJniLib.Jni.Values
         #endregion
 
         #region Public Properties
-        internal readonly ref JInvokeInterface Functions => ref this._value.AsReference<JInvokeInterface>();
+        internal readonly ref JInvokeInterface Functions => ref this._value.GetUnsafeReference<JInvokeInterface>();
         #endregion
 
         #region Public Methods

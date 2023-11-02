@@ -2,7 +2,7 @@
 
 using HelloJniLib.Jni.Pointers;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib
 {
@@ -23,7 +23,7 @@ namespace HelloJniLib
             try
             {
                 JNILoadLibraryDelagate del = ExportedMethods.LoadLibrary;
-                IntPtr ptr = del.AsIntPtr();
+                IntPtr ptr = del.GetUnsafeIntPtr();
 #if ANDROID
                 Console.WriteLine("Use System.Security.Cryptography.Native.Android method");
                 SetJniOnLoad(ptr);

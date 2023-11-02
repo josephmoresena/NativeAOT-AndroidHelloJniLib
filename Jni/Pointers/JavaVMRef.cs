@@ -1,6 +1,6 @@
 ﻿using HelloJniLib.Jni.Values;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.Pointers
 {
@@ -16,7 +16,7 @@ namespace HelloJniLib.Jni.Pointers
         #endregion
 
         #region Public Properties
-        internal readonly ref JavaVMValue VirtualMachine => ref this._value.AsReference<JavaVMValue>();
+        internal readonly ref JavaVMValue VirtualMachine => ref this._value.GetUnsafeReference<JavaVMValue>();
         #endregion
 
         #region Public Methods

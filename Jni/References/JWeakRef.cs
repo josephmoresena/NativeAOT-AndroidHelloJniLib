@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-using Rxmxnx.PInvoke.Extensions;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni.References
 {
