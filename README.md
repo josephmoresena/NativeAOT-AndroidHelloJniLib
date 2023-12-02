@@ -29,7 +29,7 @@ The following commands assume:
  * Target architecture is arm64.
  * Host architecture is windows, linux or macOS x64.
 
-	   dotnet publish -r linux-bionic-arm64 -p:DisableUnsupportedError=true -p:PublishAotUsingRuntimePack=true -p:AssemblyName=libhello-jni -p:RemoveSections=true \
+	   dotnet publish -r linux-bionic-arm64 -p:DisableUnsupportedError=true -p:PublishAotUsingRuntimePack=true -p:AssemblyName=libhello-jni -p:RemoveSections=true
 
 #### Environment Parameters 
 * ObjCopyName: Path of NDK ObjCopy. This is needed in order to use StripSymbols MSBuild parameter.
