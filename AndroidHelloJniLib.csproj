@@ -35,24 +35,33 @@
     
 	<PropertyGroup>
 		<TrimUnusedDependencies>true</TrimUnusedDependencies>
+<!--		https:/
+/github.com/dotnet/corert/blob/master/Documentation/using-corert/optimizing-corert.md-->
 		<RootAllApplicationAssemblies>false</RootAllApplicationAssemblies>
 		<IlcGenerateCompleteTypeMetadata>true</IlcGenerateCompleteTypeMetadata>
 		<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
 		<IlcTrimMetadata>true</IlcTrimMetadata>
 		<IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+<!--		<IlcOptimizationPreference>Size</IlcOptimizationPreference>-->
 		<IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
 	</PropertyGroup>
     
 	<!--Following blocks are exclusive for Android building-->
 	<PropertyGroup Condition="$(IsAndroid) == 'true'">
         <!--Use ndk-sample expected library name -->
-		<CppCompilerAndLinker Condition="$(IsWindowsHost) == 'true'">./android_fake_clang.cmd</CppCompilerAndLinker>
+		<!--adding the path to system env param path-->
+		<CppCompilerAndLinker Condition="$(IsWindowsHost) == 'true'">android_fake_clang.bat</CppCompilerAndLinker>
 		<CppCompilerAndLinker Condition="$(IsLinuxHost) == 'true'">./android_fake_clang.sh</CppCompilerAndLinker>
 		<CppCompilerAndLinker Condition="$(IsOSXHost) == 'true'">./android_fake_clang.command</CppCompilerAndLinker>
+		
 		<NdkHost Condition="$(IsWindowsHost) == 'true'">windows-x86_64</NdkHost>
 		<NdkHost Condition="$(IsLinuxHost) == 'true'">linux-x86_64</NdkHost>
 		<NdkHost Condition="$(IsOSXHost) == 'true'">darwin-x86_64</NdkHost>
-		<ObjCopyName Condition="'$(ObjCopyName)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/$(NdkHost)/bin/llvm-objcopy</ObjCopyName>
+		
+		<!--adding the path to system env param path-->
+		<ObjCopyName Condition="'$(ObjCopyName)' == ''">llvm-objcopy</ObjCopyName>
+		<!--<ObjCopyName Condition="'$(ObjCopyName)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/$(NdkHost)/bin/llvm-objcopy</ObjCopyName>-->
+		
 		<SysRoot Condition="'$(SysRoot)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/$(NdkHost)/sysroot</SysRoot>
 		<!--Hack for removing init and fini sections into the exports file-->
 		<ExportsPatch>'s/global: _init; _fini;/global: /g;'</ExportsPatch>
@@ -82,5 +91,6 @@
 		<!--The sed tool is used as invalid lines remover-->
 		<Exec Command="sed -i -z $(ExportsPatch) $(ExportsFile)" />
 	</Target>
-    
+
+	
 </Project>
