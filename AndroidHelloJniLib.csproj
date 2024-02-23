@@ -5,7 +5,7 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>true</Optimize>
-		<OutputType>Library</OutputType>
+		<OutputType>Exe</OutputType>
 		<NativeLib>Shared</NativeLib>
 		<SelfContained>true</SelfContained>
 		<TrimMode>Link</TrimMode>

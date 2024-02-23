@@ -1,6 +1,7 @@
 ﻿using System.Runtime.InteropServices;
 
 using HelloJniLib.Jni;
+using HelloJniLib.Jni.Identifiers;
 using HelloJniLib.Jni.Pointers;
 using HelloJniLib.Jni.References;
 using HelloJniLib.Jni.Values;
@@ -23,17 +24,22 @@ namespace HelloJniLib
             load = DateTime.Now;
             return 0x00010006; //JNI_VERSION_1_6
         }
-
-        [UnmanagedCallersOnly(EntryPoint = "Java_com_example_hellojni_HelloJni_stringFromJNI")]
+        
+        [UnmanagedCallersOnly(EntryPoint = "Java_com_csharp_interop_HelloJNI_stringFromJNI")]
         internal static JStringLocalRef Hello(JEnvRef jEnv, JObjectLocalRef jObj)
         {
             DateTime call = DateTime.Now;
             count++;
 
             String result =
-                "Hello from JNI! Compiled with NativeAOT." + Environment.NewLine
-                + GetRuntimeInformation(call);
-
+                $"Hello from JNI!  {count} Compiled with NativeAOT." 
+                + Environment.NewLine
+                + GetRuntimeInformation(call)
+                + Environment.NewLine
+                + "Call JNI find class:"
+                + Environment.NewLine
+                + JNIHelper.findClass(jEnv,"com/csharp/interop/HelloJNI")
+                + Environment.NewLine;
             return result.AsSpan().WithSafeFixed(jEnv, CreateString);
         }
 
@@ -47,8 +53,9 @@ namespace HelloJniLib
 
             return newString(jEnv, ctx.Pointer, ctx.Values.Length);
         }
+       
 
-        private static String GetRuntimeInformation(DateTime call)
+        public static String GetRuntimeInformation(DateTime call)
             => $"Load: {load.GetString()}" + Environment.NewLine
             + $"Call: {call.GetString()}" + Environment.NewLine
             + $"Count: {count}"
@@ -89,6 +96,10 @@ namespace HelloJniLib
             => GetString((DateTime?)date);
         private static String GetString(this DateTime? date)
             => date != default ? date.Value.ToString("yyyy-MM-dd HH:mm:ss.fffffff") : "null";
+        
     }
 #pragma warning restore IDE0060
+    
+    
+    
 }
