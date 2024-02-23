@@ -9,6 +9,18 @@ using Rxmxnx.PInvoke;
 
 namespace HelloJniLib.Jni;
 
+// jclass jniInitializerClass = envPtr->FindClass( "android/app/ActivityThread");
+//     if (jniInitializerClass == NULL) {return NULL;}
+// jmethodID getApplicationMethod = envPtr->GetStaticMethodID(jniInitializerClass,"currentApplication","()Landroid/app/Application;");
+//     if (getApplicationMethod == NULL) {return NULL;}
+//
+// jobject app = envPtr->CallStaticObjectMethod( jniInitializerClass,getApplicationMethod);
+//     if (app == NULL) {return NULL;}
+//
+// jobject ctx = CallObjectMethod(app, "getBaseContext", "()Landroid/content/Context;").l;
+//
+// ctx = envPtr->NewGlobalRef(ctx);
+
 public class JNIHelper {
     // 获取JVM实例的函数指针
     public static T getJNIFunc<T>(JEnvRef env, IntPtr ptr) where T: Delegate{
@@ -18,7 +30,12 @@ public class JNIHelper {
     // 找到一个JVM已经加载的类
     public static JClassLocalRef findClass(JEnvRef env, String sign) {
         var dlg = getJNIFunc<FindClassDelegate>(env,env.Environment.Functions.FindClassPointer);
-        return dlg(env, (CCharSequence)Encoding.UTF8.GetBytes(sign).AsSpan());
+        return dlg(env, sign.ToCCharSequece());
+    }
+    // 找到静态方法的MethodID
+    public static JMethodId findStaticMethod(JEnvRef env, JClassLocalRef clazz,String metodName,String parSign) {
+        var dlg = getJNIFunc<GetStaticMethodIdDelegate>(env,env.Environment.Functions.GetStaticMethodIdPointer);
+        return dlg(env,clazz, metodName.ToCCharSequece(),parSign.ToCCharSequece());
     }
 
     //new a java string
@@ -29,7 +46,7 @@ public class JNIHelper {
         });
     }
     
-    private static JStringLocalRef CallStaticMethod(JEnvRef jEnv , String sign, params object[] pars)
+    public static JObjectLocalRef callStaticVMethod(JEnvRef jEnv , JClassLocalRef clazz,JMethodId jMethod, params object[] pars)
     {
         JEnvValue value = jEnv.Environment;
         ref JNativeInterface jInterface = ref value.Functions;
@@ -37,11 +54,8 @@ public class JNIHelper {
         IntPtr callPoint = jInterface.CallStaticVoidMethodPointer;
         CallStaticVoidMethodDelegate method = callPoint.GetUnsafeDelegate<CallStaticVoidMethodDelegate>();
 
-        //todo
-        JClassLocalRef jclass = default; 
-        JMethodId jMethod = default; 
-        IntPtr args = default;
-        method(jEnv, jclass, jMethod, args);
+        IntPtr args = default;//TODO 参数转为指针
+        method(jEnv, clazz, jMethod, args);
         return default;
     }
 }

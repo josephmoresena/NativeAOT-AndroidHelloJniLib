@@ -31,6 +31,10 @@ namespace HelloJniLib
             DateTime call = DateTime.Now;
             count++;
 
+            var javaClazz = JNIHelper.findClass(jEnv,"com/csharp/interop/HelloJNI");
+            var javaMethod= JNIHelper.findStaticMethod(jEnv,javaClazz,"callByCSharp","()V");
+            var javaObject= JNIHelper.callStaticVMethod(jEnv,javaClazz,javaMethod,null);
+            
             String result =
                 $"Hello from JNI!  {count} Compiled with NativeAOT." 
                 + Environment.NewLine
@@ -38,7 +42,11 @@ namespace HelloJniLib
                 + Environment.NewLine
                 + "Call JNI find class:"
                 + Environment.NewLine
-                + JNIHelper.findClass(jEnv,"com/csharp/interop/HelloJNI")
+                + javaClazz
+                + Environment.NewLine
+                + javaMethod
+                + Environment.NewLine
+                + javaObject
                 + Environment.NewLine;
             return result.AsSpan().WithSafeFixed(jEnv, CreateString);
         }
