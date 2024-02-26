@@ -18,6 +18,8 @@ namespace HelloJniLib
         private static DateTime? load = default;
         private static Int32 count = 0;
 
+
+        
         [UnmanagedCallersOnly(EntryPoint = "JNI_OnLoad")]
         internal static Int32 LoadLibrary(JavaVMRef vm, IntPtr unknown)
         {
@@ -26,16 +28,22 @@ namespace HelloJniLib
         }
         
         [UnmanagedCallersOnly(EntryPoint = "Java_com_csharp_interop_HelloJNI_stringFromJNI")]
-        internal static JStringLocalRef Hello(JEnvRef jEnv, JObjectLocalRef jObj)
+        internal static JStringLocalRef Hello(JEnvRef jEnv, JObjectLocalRef jObj,JStringLocalRef str)
         {
+            // jString = this.CreateInitialObject<JStringObject>(str.);
             DateTime call = DateTime.Now;
             count++;
 
+            Log.d(str.ToString());
+            
             var javaClazz = JNIHelper.findClass(jEnv,"com/csharp/interop/HelloJNI");
             var javaMethod= JNIHelper.findStaticMethod(jEnv,javaClazz,"callByCSharp","()V");
-            var javaObject= JNIHelper.callStaticVMethod(jEnv,javaClazz,javaMethod,null);
-            
-            String result =
+            JNIHelper.callStaticMethodV_V(jEnv,javaClazz,javaMethod);
+            // var javastr= JNIHelper.callStaticMethodStr_Str(jEnv,"com/csharp/interop/HelloJNI",
+            //                                                "callByCSharp","(Ljava/lang/String;)Ljava/lang/String;",
+            //                                                "greet from csharp");
+            string javastr = " ";
+            string result =
                 $"Hello from JNI!  {count} Compiled with NativeAOT." 
                 + Environment.NewLine
                 + GetRuntimeInformation(call)
@@ -46,9 +54,11 @@ namespace HelloJniLib
                 + Environment.NewLine
                 + javaMethod
                 + Environment.NewLine
-                + javaObject
+                + javastr
+                + Environment.NewLine
+                + "par:"+str
                 + Environment.NewLine;
-            return result.AsSpan().WithSafeFixed(jEnv, CreateString);
+            return result.toJavaString(jEnv);
         }
 
         private static JStringLocalRef CreateString(in IReadOnlyFixedContext<Char> ctx, JEnvRef jEnv)
