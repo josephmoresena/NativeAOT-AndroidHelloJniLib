@@ -194,7 +194,7 @@ namespace HelloJniLib.Jni
 
     internal delegate JStringLocalRef NewStringUtfDelegate(JEnvRef env, CCharSequence unicode);
     internal delegate Int32 GetStringUtfLengthDelegate(JEnvRef env, JStringLocalRef jString);
-    internal delegate CCharSequence GetStringUtfCharsDelegate(JEnvRef env, JStringLocalRef jString, JBooleanRef isCopy);
+    internal delegate CCharSequence GetStringUtfCharsDelegate(JEnvRef env, JObjectLocalRef jString, JBooleanRef isCopy);
     internal delegate void ReleaseStringUtfCharsDelegate(JEnvRef env, JStringLocalRef jString, CCharSequence chars);
 
     internal delegate Int32 GetArrayLengthDelegate(JEnvRef env, JArrayLocalRef array);

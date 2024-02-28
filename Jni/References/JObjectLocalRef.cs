@@ -6,6 +6,8 @@ namespace HelloJniLib.Jni.References
     {
 #pragma warning disable 0649
         private readonly IntPtr _value;
+        public IntPtr Pointer => this._value;
+
 #pragma warning restore 0649
 
         #region Public Methods

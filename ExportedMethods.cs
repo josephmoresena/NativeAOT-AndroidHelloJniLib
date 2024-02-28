@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 
 using HelloJniLib.Jni;
 using HelloJniLib.Jni.Identifiers;
@@ -33,16 +34,20 @@ namespace HelloJniLib
             // jString = this.CreateInitialObject<JStringObject>(str.);
             DateTime call = DateTime.Now;
             count++;
-
-            Log.d(str.ToString());
+            
             
             var javaClazz = JNIHelper.findClass(jEnv,"com/csharp/interop/HelloJNI");
             var javaMethod= JNIHelper.findStaticMethod(jEnv,javaClazz,"callByCSharp","()V");
             JNIHelper.callStaticMethodV_V(jEnv,javaClazz,javaMethod);
-            // var javastr= JNIHelper.callStaticMethodStr_Str(jEnv,"com/csharp/interop/HelloJNI",
-            //                                                "callByCSharp","(Ljava/lang/String;)Ljava/lang/String;",
-            //                                                "greet from csharp");
             string javastr = " ";
+            var arg = "greet from csharp";
+            Log.d($"reflect callStaticMethodStr_Str args:{arg}");
+            javastr= JNIHelper.callStaticMethodStr_Str(jEnv,"com/csharp/interop/HelloJNI",
+                                                       "callByCSharp","(Ljava/lang/String;)Ljava/lang/String;",
+                                                       arg);
+            
+            Log.d($"reflect callStaticMethodStr_Str return :{javastr}");
+            
             string result =
                 $"Hello from JNI!  {count} Compiled with NativeAOT." 
                 + Environment.NewLine
@@ -58,7 +63,7 @@ namespace HelloJniLib
                 + Environment.NewLine
                 + "par:"+str
                 + Environment.NewLine;
-            return result.toJavaString(jEnv);
+            return result.toJavaStringRef(jEnv);
         }
 
         private static JStringLocalRef CreateString(in IReadOnlyFixedContext<Char> ctx, JEnvRef jEnv)
@@ -114,7 +119,6 @@ namespace HelloJniLib
             => GetString((DateTime?)date);
         private static String GetString(this DateTime? date)
             => date != default ? date.Value.ToString("yyyy-MM-dd HH:mm:ss.fffffff") : "null";
-        
     }
 #pragma warning restore IDE0060
     

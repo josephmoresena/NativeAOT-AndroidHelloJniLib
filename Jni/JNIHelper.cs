@@ -1,3 +1,5 @@
+using System.Collections.Immutable;
+using System.Runtime.InteropServices;
 using System.Text;
 
 using HelloJniLib.Jni.Identifiers;
@@ -39,15 +41,22 @@ public static class JNIHelper {
         return dlg(env,clazz, metodName.ToCCharSequece(),parSign.ToCCharSequece());
     }
 
+    // JNativeCallAdapter callAdapter = JNativeCallAdapter.Create(envRef, localRef, out JLocalObject jLocal)
+    //    .WithParameter(stringRef, out JStringObject jString).Build();
+    // JHelloDotnetObject.PassStringEvent?.Invoke(jString.Value);
+    
+    
     //new a java string
     public static JStringLocalRef newJavaString(JEnvRef env, String str) {
-       return str.AsSpan().WithSafeFixed(env, (in IReadOnlyFixedContext<Char> ctx, JEnvRef jEnv)=> {
-           var dlg = getJNIFunc<NewStringDelegate>(env,env.Environment.Functions.NewStringPointer);
-           return dlg(jEnv, ctx.Pointer, ctx.Values.Length);
-        });
+        JStringLocalRef strRef = str.toJavaStringRef(env);
+        // JObjectLocalRef localRef = strRef.Value;
+        // JClassLocalRef jStrClazz = findClass(env,"java/lang/String");
+        var dlg = getJNIFunc<NewStringUtfDelegate>(env,env.Environment.Functions.NewStringUtfPointer);
+        JStringLocalRef jStrObject = dlg(env,str.ToCCharSequece());
+        return jStrObject;
     }
     
-    public static JStringLocalRef toJavaString(this string str, JEnvRef env) {
+    public static JStringLocalRef toJavaStringRef(this string str, JEnvRef env) {
         return str.AsSpan().WithSafeFixed(env, (in IReadOnlyFixedContext<Char> ctx, JEnvRef jEnv)=> {
             var dlg = getJNIFunc<NewStringDelegate>(env,env.Environment.Functions.NewStringPointer);
             return dlg(jEnv, ctx.Pointer, ctx.Values.Length);
@@ -60,7 +69,6 @@ public static class JNIHelper {
 
         IntPtr callPoint = jInterface.CallStaticVoidMethodPointer;
         CallStaticVoidMethodDelegate method = callPoint.GetUnsafeDelegate<CallStaticVoidMethodDelegate>();
-        // IntPtr args = default;
         method(jEnv, clazz, jMethod, default);
     }
     public static void callStaticMethodV_Str(JEnvRef jEnv , String classPath,String methodName,String methodSign, string pars) {
@@ -73,7 +81,7 @@ public static class JNIHelper {
         IntPtr callPoint = jInterface.CallStaticVoidMethodPointer;
         CallStaticVoidMethodDelegate method = callPoint.GetUnsafeDelegate<CallStaticVoidMethodDelegate>();
         var stringLocalRef = newJavaString(jEnv,pars);
-        method(jEnv, javaClazz, javaMethod, stringLocalRef.GetUnsafeIntPtr());
+        method(jEnv, javaClazz, javaMethod, stringLocalRef.Pointer);
         
     }
     public static string callStaticMethodStr_Str(JEnvRef jEnv , String classPath,String methodName,String methodSign, string pars) {
@@ -84,10 +92,13 @@ public static class JNIHelper {
         ref JNativeInterface jni = ref envPtr.Functions;
 
         var invoke = jni.CallStaticObjectMethodPointer.GetUnsafeDelegate<CallStaticObjectMethodDelegate>();
-        
-        var strRef = pars.toJavaString(jEnv);
+        var strRef = newJavaString(jEnv,pars);
         // JStringObject jso = new JStringObject(strRef); 
-        var result = invoke(jEnv,javaClazz,javaMethod,strRef.GetUnsafeValPtr());
-        return Encoding.UTF8.GetString(result.ToBytes());
+        var result = invoke(jEnv,javaClazz,javaMethod,strRef.Pointer);
+        
+        var invoke_getStrUtf = jni.GetStringUtfCharsPointer.GetUnsafeDelegate<GetStringUtfCharsDelegate>();
+        
+        var utfString = invoke_getStrUtf(jEnv,result,new JBooleanRef(true));
+        return utfString.AsString();
     }
 }
