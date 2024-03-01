@@ -1,5 +1,7 @@
 using System.Runtime.InteropServices;
 
+using utils;
+
 namespace HelloJniLib;
 //android logcat api , export from android log library(-llog)
 public static class Log {
@@ -11,10 +13,17 @@ public static class Log {
     public const int ANDROID_LOG_ERROR = 6;
     public const int ANDROID_LOG_FATAL = 7;
     public const int ANDROID_LOG_SILENT = 8;
+#if ANDROID
     [DllImport("log",EntryPoint="__android_log_print")]
     public static extern void log(int level, string tag, string msg , params string[] args);
     public static void d(string msg , params string[] args) =>log(ANDROID_LOG_DEBUG,tag,msg,args);
     public static void w(string msg , params string[] args) =>log(ANDROID_LOG_WARN,tag,msg,args);
     public static void e(string msg , params string[] args) =>log(ANDROID_LOG_ERROR,tag,msg,args);
+#else
+    public static void d(string msg , params string[] args) =>ConsoleLog.d(msg);
+    public static void w(string msg , params string[] args) =>ConsoleLog.d(msg);
+    public static void e(string msg , params string[] args) =>ConsoleLog.e(msg);
+#endif 
+
     
 }

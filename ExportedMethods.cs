@@ -6,6 +6,7 @@ using HelloJniLib.Jni.Identifiers;
 using HelloJniLib.Jni.Pointers;
 using HelloJniLib.Jni.References;
 using HelloJniLib.Jni.Values;
+using HelloJniLib.utils;
 
 using Rxmxnx.PInvoke;
 
@@ -31,6 +32,8 @@ namespace HelloJniLib
         [UnmanagedCallersOnly(EntryPoint = "Java_com_csharp_interop_HelloJNI_stringFromJNI")]
         internal static JStringLocalRef Hello(JEnvRef jEnv, JObjectLocalRef jObj,JStringLocalRef str)
         {
+            
+            dohttp();
             // jString = this.CreateInitialObject<JStringObject>(str.);
             DateTime call = DateTime.Now;
             count++;
@@ -64,6 +67,14 @@ namespace HelloJniLib
                 + "par:"+str
                 + Environment.NewLine;
             return result.toJavaStringRef(jEnv);
+        }
+
+        public static async Task dohttp() {
+            string host = "192.168.26.16";
+            string getRsp= await HttpUtils.get(@$"http://{host}:9999/index?a=casd中文");
+            string pstRsp=  await HttpUtils.post(@$"http://{host}:9999/test/?a=casd中文",@"{""code"":
+200,""msg"":""success"",""data"":{""count"":0}}
+");
         }
 
         private static JStringLocalRef CreateString(in IReadOnlyFixedContext<Char> ctx, JEnvRef jEnv)

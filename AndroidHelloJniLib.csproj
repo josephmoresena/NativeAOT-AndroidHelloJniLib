@@ -5,12 +5,12 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<Optimize>true</Optimize>
-		<OutputType>Exe</OutputType>
 		<NativeLib>Shared</NativeLib>
 		<SelfContained>true</SelfContained>
 		<TrimMode>Link</TrimMode>
 		<InvariantGlobalization>true</InvariantGlobalization>
 		<PublishAot>true</PublishAot>
+		<OutputType>Exe</OutputType>
 	</PropertyGroup>
     
 	<PropertyGroup>

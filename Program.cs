@@ -1,9 +1,13 @@
 using System.Runtime.InteropServices;
 
+using HelloJniLib.utils;
+
 namespace HelloJniLib;
 
 public class Program {
-    public static void Main(string[] args) {
+    public static async Task Main(string[] args) {
+       await ExportedMethods.dohttp();
+        
         string helloworld = GetRuntimeInformation();
         Console.WriteLine($"Welcome Android \n {helloworld}");
         
