@@ -6,6 +6,14 @@ namespace HelloJniLib.Jni.References
     {
 #pragma warning disable 0649
         private readonly JObjectLocalRef _value;
+        
+        /// <summary>
+        /// JNI local reference.
+        /// </summary>
+        public JObjectLocalRef Value => this._value;
+        /// <inheritdoc/>
+        public IntPtr Pointer => this._value.Pointer;
+        
 #pragma warning restore 0649
 
         #region Public Methods

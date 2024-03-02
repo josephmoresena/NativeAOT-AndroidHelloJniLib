@@ -1,9 +1,12 @@
 ﻿using System.Runtime.InteropServices;
+using System.Text;
 
 using HelloJniLib.Jni;
+using HelloJniLib.Jni.Identifiers;
 using HelloJniLib.Jni.Pointers;
 using HelloJniLib.Jni.References;
 using HelloJniLib.Jni.Values;
+using HelloJniLib.utils;
 
 using Rxmxnx.PInvoke;
 
@@ -17,24 +20,61 @@ namespace HelloJniLib
         private static DateTime? load = default;
         private static Int32 count = 0;
 
+
+        
         [UnmanagedCallersOnly(EntryPoint = "JNI_OnLoad")]
         internal static Int32 LoadLibrary(JavaVMRef vm, IntPtr unknown)
         {
             load = DateTime.Now;
             return 0x00010006; //JNI_VERSION_1_6
         }
-
-        [UnmanagedCallersOnly(EntryPoint = "Java_com_example_hellojni_HelloJni_stringFromJNI")]
-        internal static JStringLocalRef Hello(JEnvRef jEnv, JObjectLocalRef jObj)
+        
+        [UnmanagedCallersOnly(EntryPoint = "Java_com_csharp_interop_HelloJNI_stringFromJNI")]
+        internal static JStringLocalRef Hello(JEnvRef jEnv, JObjectLocalRef jObj,JStringLocalRef str)
         {
+            
+            dohttp();
+            // jString = this.CreateInitialObject<JStringObject>(str.);
             DateTime call = DateTime.Now;
             count++;
+            
+            
+            var javaClazz = JNIHelper.findClass(jEnv,"com/csharp/interop/HelloJNI");
+            var javaMethod= JNIHelper.findStaticMethod(jEnv,javaClazz,"callByCSharp","()V");
+            JNIHelper.callStaticMethodV_V(jEnv,javaClazz,javaMethod);
+            string javastr = " ";
+            var arg = "greet from csharp";
+            Log.d($"reflect callStaticMethodStr_Str args:{arg}");
+            javastr= JNIHelper.callStaticMethodStr_Str(jEnv,"com/csharp/interop/HelloJNI",
+                                                       "callByCSharp","(Ljava/lang/String;)Ljava/lang/String;",
+                                                       arg);
+            
+            Log.d($"reflect callStaticMethodStr_Str return :{javastr}");
+            
+            string result =
+                $"Hello from JNI!  {count} Compiled with NativeAOT." 
+                + Environment.NewLine
+                + GetRuntimeInformation(call)
+                + Environment.NewLine
+                + "Call JNI find class:"
+                + Environment.NewLine
+                + javaClazz
+                + Environment.NewLine
+                + javaMethod
+                + Environment.NewLine
+                + javastr
+                + Environment.NewLine
+                + "par:"+str
+                + Environment.NewLine;
+            return result.toJavaStringRef(jEnv);
+        }
 
-            String result =
-                "Hello from JNI! Compiled with NativeAOT." + Environment.NewLine
-                + GetRuntimeInformation(call);
-
-            return result.AsSpan().WithSafeFixed(jEnv, CreateString);
+        public static async Task dohttp() {
+            string host = "192.168.26.16";
+            string getRsp= await HttpUtils.get(@$"http://{host}:9999/index?a=casd中文");
+            string pstRsp=  await HttpUtils.post(@$"http://{host}:9999/test/?a=casd中文",@"{""code"":
+200,""msg"":""success"",""data"":{""count"":0}}
+");
         }
 
         private static JStringLocalRef CreateString(in IReadOnlyFixedContext<Char> ctx, JEnvRef jEnv)
@@ -47,8 +87,9 @@ namespace HelloJniLib
 
             return newString(jEnv, ctx.Pointer, ctx.Values.Length);
         }
+       
 
-        private static String GetRuntimeInformation(DateTime call)
+        public static String GetRuntimeInformation(DateTime call)
             => $"Load: {load.GetString()}" + Environment.NewLine
             + $"Call: {call.GetString()}" + Environment.NewLine
             + $"Count: {count}"
@@ -91,4 +132,7 @@ namespace HelloJniLib
             => date != default ? date.Value.ToString("yyyy-MM-dd HH:mm:ss.fffffff") : "null";
     }
 #pragma warning restore IDE0060
+    
+    
+    
 }
