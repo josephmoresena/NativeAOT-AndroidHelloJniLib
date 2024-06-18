@@ -1,11 +1,10 @@
-﻿using HelloJniLib.Jni.Pointers;
+﻿using Rxmxnx.PInvoke;
 
-namespace HelloJniLib.Jni.Values
+namespace HelloJniLib.Jni.Values;
+
+public readonly struct JNativeMethod
 {
-    public readonly struct JNativeMethod
-    {
-        internal CCharSequence Name { get; init; }
-        internal CCharSequence Signature { get; init; }
-        internal IntPtr Pointer { get; init; }
-    }
+	internal ReadOnlyValPtr<Byte> Name { get; init; }
+	internal ReadOnlyValPtr<Byte> Signature { get; init; }
+	internal IntPtr Pointer { get; init; }
 }

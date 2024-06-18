@@ -1,10 +1,9 @@
-﻿using HelloJniLib.Jni.Pointers;
+﻿using Rxmxnx.PInvoke;
 
-namespace HelloJniLib.Jni.Values
+namespace HelloJniLib.Jni.Values;
+
+public readonly struct JavaVMOption
 {
-    public readonly struct JavaVMOption
-    {
-        internal CCharSequence Name { get; init; }
-        internal IntPtr ExtraInfo { get; init; }
-    }
+	internal ReadOnlyValPtr<Byte> Name { get; init; }
+	internal IntPtr ExtraInfo { get; init; }
 }
