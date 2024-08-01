@@ -13,7 +13,7 @@ public sealed partial class AndroidLooper
 		public void Invoke(IEnvironment env)
 		{
 			JClassObject looperClass = JClassObject.GetClass<AndroidLooper>(env);
-			this.StaticInvoke(looperClass);
+			this.StaticInvoke(looperClass, []);
 		}
 	}
 }
