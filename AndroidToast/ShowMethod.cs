@@ -10,6 +10,6 @@ public partial class AndroidToast
 		public static readonly ShowMethod Instance = new();
 
 		public void Invoke(AndroidToast toast)
-			=> base.Invoke(toast, JClassObject.GetClass<AndroidToast>(toast.Environment), []);
+			=> base.Invoke(toast, JClassObject.GetClass<AndroidToast>(toast.Environment));
 	}
 }

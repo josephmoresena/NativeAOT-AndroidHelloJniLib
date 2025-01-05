@@ -4,14 +4,14 @@ using System.Runtime.InteropServices;
 using Rxmxnx.JNetInterface;
 using Rxmxnx.JNetInterface.Lang;
 using Rxmxnx.JNetInterface.Native.References;
+using Rxmxnx.PInvoke;
 
 namespace HelloJniLib;
 
 internal static class ExportedMethods
 {
 	private const String helloJniName = "com_example_hellojni_HelloJni";
-	private static readonly Boolean disabledReflection = !typeof(String).ToString().Contains(nameof(String));
-	
+
 	private static HelloJni? instance;
 
 	static ExportedMethods()
@@ -72,15 +72,13 @@ internal static class ExportedMethods
 				                          out AndroidContext context) :
 				JNativeCallAdapter.Create(envRef, localRef, out context)).Build();
 		ExportedMethods.instance ??= // Initializes the instance if JNI_OnLoad was not called.
-			new(adapter.Environment.VirtualMachine); 
+			new(adapter.Environment.VirtualMachine);
 		JStringObject jString = ExportedMethods.instance.GetString(call, adapter.Environment, context);
 		return adapter.FinalizeCall(jString); // Finalize adapter with a JString result.
 	}
 
 	private static String GetRuntimeInformation()
-		=> !ExportedMethods.disabledReflection ?
-			ExportedMethods.GetRuntimeReflectionInformation() :
-			"REFLECTION DISABLED";
+		=> !AotInfo.IsReflectionDisabled ? ExportedMethods.GetRuntimeReflectionInformation() : "REFLECTION DISABLED";
 	private static String GetRuntimeReflectionInformation()
 		=> $"Framework Version: {Environment.Version}" + Environment.NewLine +
 			$"Runtime Name: {RuntimeInformation.FrameworkDescription}" + Environment.NewLine +
