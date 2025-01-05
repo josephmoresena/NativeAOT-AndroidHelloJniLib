@@ -8,7 +8,7 @@
         <OutputType>Library</OutputType>
         <NativeLib>Shared</NativeLib>
         <SelfContained>true</SelfContained>
-        <TrimMode>Link</TrimMode>
+        <TrimMode>full</TrimMode>
         <InvariantGlobalization>true</InvariantGlobalization>
         <PublishAot>true</PublishAot>
         <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
