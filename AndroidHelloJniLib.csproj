@@ -11,6 +11,8 @@
         <TrimMode>Link</TrimMode>
         <InvariantGlobalization>true</InvariantGlobalization>
         <PublishAot>true</PublishAot>
+        <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+        <TrimmerSingleWarn>false</TrimmerSingleWarn>
     </PropertyGroup>
 
     <PropertyGroup>
@@ -28,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="1.5.1" />
+        <PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="2.0.1" />
         <!--JNI libs needs to be compiled with -z noexecstack-->
         <LinkerArg Condition="$(LinuxHost) == 'true' Or $(IsAndroid) == 'true'" Include="-z noexecstack"/>
     </ItemGroup>
