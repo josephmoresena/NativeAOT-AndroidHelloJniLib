@@ -4,6 +4,7 @@
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <Nullable>enable</Nullable>
         <Optimize>true</Optimize>
         <OutputType>Library</OutputType>
         <NativeLib>Shared</NativeLib>
@@ -12,19 +13,26 @@
         <InvariantGlobalization>true</InvariantGlobalization>
         <PublishAot>true</PublishAot>
         <PublishTrimmed>true</PublishTrimmed>
-        <Nullable>enable</Nullable>
+        <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
+        <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
         <IlcGenerateDgmlFile>true</IlcGenerateDgmlFile>
         <OptimizationPreference>Size</OptimizationPreference>
     </PropertyGroup>
 
+    <!-- Import NDK pressets -->
+    <Import Project="BionicNativeAot.targets"/>
+
+    <!-- NativeAot Properties -->
     <PropertyGroup>
-        <!--This is needed in order to build successfully Android binaries-->
-        <IsAndroid>$(RuntimeIdentifier.ToLower().StartsWith('android'))</IsAndroid>
-        <IsAndroid Condition="'$(IsAndroid)'=='false'">$(RuntimeIdentifier.ToLower().StartsWith('linux-bionic'))</IsAndroid>
-        <IsWindowsHost>$([MSBuild]::IsOSPlatform('Windows'))</IsWindowsHost>
-        <IsLinuxHost>$([MSBuild]::IsOSPlatform('Linux'))</IsLinuxHost>
-        <IsOSXHost>$([MSBuild]::IsOSPlatform('OSX'))</IsOSXHost>
+        <TrimUnusedDependencies>true</TrimUnusedDependencies>
+        <RootAllApplicationAssemblies>false</RootAllApplicationAssemblies>
+        <IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
+        <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+        <IlcTrimMetadata>true</IlcTrimMetadata>
+        <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+        <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
+        <!--<IlcDisableReflection>true</IlcDisableReflection>-->
     </PropertyGroup>
 
     <ItemGroup>
@@ -44,56 +52,5 @@
         <RuntimeHostConfigurationOption Include="JNetInterface.DisableReflectionAutoRegistration" Value="true" Trim="true"/>
         <RuntimeHostConfigurationOption Include="JNetInterface.DisableNioAutoRegistration" Value="true" Trim="true"/>
     </ItemGroup>
-
-    <PropertyGroup>
-        <TrimUnusedDependencies>true</TrimUnusedDependencies>
-        <RootAllApplicationAssemblies>false</RootAllApplicationAssemblies>
-        <IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
-        <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
-        <IlcTrimMetadata>true</IlcTrimMetadata>
-        <IlcOptimizationPreference>Size</IlcOptimizationPreference>
-        <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
-        <!--<IlcDisableReflection>true</IlcDisableReflection>-->
-    </PropertyGroup>
-
-    <!--Following blocks are exclusive for Android building-->
-    <PropertyGroup Condition="$(IsAndroid) == 'true'">
-        <!--Use ndk-sample expected library name -->
-        <CppCompilerAndLinker Condition="$(IsWindowsHost) == 'true'">./android_fake_clang.cmd</CppCompilerAndLinker>
-        <CppCompilerAndLinker Condition="$(IsLinuxHost) == 'true'">./android_fake_clang.sh</CppCompilerAndLinker>
-        <CppCompilerAndLinker Condition="$(IsOSXHost) == 'true'">./android_fake_clang.command</CppCompilerAndLinker>
-        <NdkHost Condition="$(IsWindowsHost) == 'true'">windows-x86_64</NdkHost>
-        <NdkHost Condition="$(IsLinuxHost) == 'true'">linux-x86_64</NdkHost>
-        <NdkHost Condition="$(IsOSXHost) == 'true'">darwin-x86_64</NdkHost>
-        <ObjCopyName Condition="'$(ObjCopyName)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/$(NdkHost)/bin/llvm-objcopy</ObjCopyName>
-        <SysRoot Condition="'$(SysRoot)' == ''">$(ANDROID_NDK_ROOT)/toolchains/llvm/prebuilt/$(NdkHost)/sysroot</SysRoot>
-        <!--Hack for removing init and fini sections into the exports file-->
-        <ExportsPatch>'s/global: _init; _fini;/global: /g;'</ExportsPatch>
-    </PropertyGroup>
-
-    <ItemGroup Condition="$(IsAndroid) == 'true'">
-        <!--Hack for passing a valid target argument on NDK linker invocation-->
-        <LinkerArg Condition="$(RuntimeIdentifier.ToLower().EndsWith('-x64'))" Include="--target=x86_64-linux-android21"/>
-        <LinkerArg Condition="$(RuntimeIdentifier.ToLower().EndsWith('-arm64'))" Include="--target=aarch64-linux-android21"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="$(IsAndroid) == 'true' And $(UseLibCSections) == 'true'">
-        <!--Hack for passing a valid target argument on NDK linker invocation-->
-        <LinkerArg Include="-Wl,--defsym,_init=__libc_init"/>
-        <LinkerArg Include="-Wl,--defsym,_fini=__libc_fini"/>
-    </ItemGroup>
-
-    <Target Name="RemoveSections" Condition="$(IsAndroid) == 'true' And $(RemoveSections) == 'true'" AfterTargets="IlcCompile" BeforeTargets="LinkNative">
-        <!--Reads as lines the generated exports file-->
-        <ReadLinesFromFile File="$(ExportsFile)">
-            <Output TaskParameter="Lines" PropertyName="ExportsLines"/>
-        </ReadLinesFromFile>
-        <!--Gets a single text from the exports lines-->
-        <PropertyGroup>
-            <ExportsText Condition="$(ExportsLines) != ''">@(ExportsLines)</ExportsText>
-        </PropertyGroup>
-        <!--The sed tool is used as invalid lines remover-->
-        <Exec Command="sed -i -z $(ExportsPatch) $(ExportsFile)"/>
-    </Target>
 
 </Project>

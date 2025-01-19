@@ -4,7 +4,7 @@ This repo is a sample for Android JNI libraries compilation with NativeAOT.
 For now, we support two ways to compile this library:
 
 1. Using BFlat tool.
-2. Using .NET SDK 8.0
+2. Using .NET SDK 9.0
 
 # BFlat
 
@@ -29,9 +29,9 @@ Use the following command to build library.
 
 	    {PATH_TO_BFLAT}bflat build -r BFlatSupport/Rxmxnx.PInvoke.Extensions.dll -r BFlatSupport/Rxmxnx.JNetInterface.Core.dll -r BFlatSupport/Rxmxnx.JNetInterface.dll --no-stacktrace-data --no-globalization --no-exception-messages -Os --no-pie --separate-symbols --os:linux --arch:arm64 --libc:bionic -o:libhello-jni.so
 
-# NET SDK 8.0
+# NET SDK 9.0
 
-With new .NET 8.0 SDK we are now able to compile NativeAOT android binaries using linux-bionic RID.
+With new .NET 9.0 SDK we are now able to compile NativeAOT android binaries using linux-bionic RID.
 
 ### How to build it
 
@@ -40,6 +40,7 @@ may
 work for android-x64 (`linux-bionic-x64`) too. <br/>
 The following commands assume:
 
+* .NET project imports [BionicNativeAot.targets](BionicNativeAot.targets) file.
 * **ANDROID_NDK_ROOT** environment variable: Full path to NDK. Used to preconfigure **CppCompilerAndLinker**, *
   *ObjCopyName** and
   **SysRoot**.
@@ -47,7 +48,7 @@ The following commands assume:
 * Target architecture is **arm64**.
 * Host architecture is windows, linux or macOS x64.
 
-      dotnet publish -r linux-bionic-arm64 -p:DisableUnsupportedError=true -p:PublishAotUsingRuntimePack=true -p:AssemblyName=libhello-jni -p:RemoveSections=true
+      dotnet publish -r linux-bionic-arm64 -p:DisableUnsupportedError=true -p:PublishAotUsingRuntimePack=true -p:AssemblyName=libhello-jni
 
 #### Environment Parameters
 
@@ -55,12 +56,12 @@ The following commands assume:
 
 #### MSBuild Parameters
 
-* **CppCompilerAndLinker**: Linker. The android_fake_clang is just a script that invokes the real NDK Clang executable.
+* **CppCompilerAndLinker**: Linker. On Windows, NDK executables must be encapsulated in **cmd** files in order to be used.
+  On Linux and macOS, the executables are used directly.
 * **SysRoot**: Sysroot path from NDK. Needed for NDK compilation.
-* **RemoveSections**: Hack to remove **__init** and **__fini** symbols from .exports file.
+* **RemoveSections**: Removes **__init** and **__fini** symbols from .exports file. When it detects that the NDK version
+  is greater than r26 it is automatically set to true.
 * **AssemblyName**: In order to produce a .so file with given name.
-* **UseLibCSections**: In order to use **__libc_init** and **__libc_fini** as exported **__init** and **__fini**
-  symbols.
 
 ## Considerations
 

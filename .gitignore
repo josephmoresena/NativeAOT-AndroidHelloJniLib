@@ -336,3 +336,6 @@ ASALocalRun/
 *.dll
 *.dwo
 .DS_Store
+/android_clang.cmd
+/android_llvm-objcopy.cmd
+android_clang.sh
