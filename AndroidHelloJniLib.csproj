@@ -17,7 +17,6 @@
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
         <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
         <IlcGenerateDgmlFile>true</IlcGenerateDgmlFile>
-        <OptimizationPreference>Size</OptimizationPreference>
     </PropertyGroup>
 
     <!-- Import NDK pressets -->
@@ -30,7 +29,7 @@
         <IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
         <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
         <IlcTrimMetadata>true</IlcTrimMetadata>
-        <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+        <IlcOptimizationPreference>Size</IlcOptimizationPreference>
         <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
         <!--<IlcDisableReflection>true</IlcDisableReflection>-->
     </PropertyGroup>
