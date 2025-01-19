@@ -4,7 +4,7 @@ This repo is a sample for Android JNI libraries compilation with NativeAOT.
 For now, we support two ways to compile this library:
 
 1. Using BFlat tool.
-2. Using .NET SDK 8.0
+2. Using .NET SDK 9.0
 
 # BFlat
 
@@ -29,12 +29,13 @@ Use the following command to build library.
 
 # NET SDK 8.0
 
-With new .NET 8.0 SDK we are now able to compile NativeAOT android binaries using linux-bionic RID.
+With new .NET 9.0 SDK we are now able to compile NativeAOT android binaries using linux-bionic RID.
 
 ### How to build it
 
-This process was tested for android-arm64 (`linux-bionic-arm64`) but may work for android-x64 (`linux-bionic-x64`)
-too. <br/>
+This process was tested for android-arm64 (`linux-bionic-arm64`) and android-arm32 (`linux-bionic-arm`) compilation but
+may
+work for android-x64 (`linux-bionic-x64`) too. <br/>
 The following commands assume:
 
 * .NET project imports [BionicNativeAot.targets](BionicNativeAot.targets) file.

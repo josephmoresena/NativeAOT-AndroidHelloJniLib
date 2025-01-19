@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
+        <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Optimize>true</Optimize>
@@ -11,8 +11,11 @@
         <TrimMode>full</TrimMode>
         <InvariantGlobalization>true</InvariantGlobalization>
         <PublishAot>true</PublishAot>
+        <PublishTrimmed>true</PublishTrimmed>
         <SuppressTrimAnalysisWarnings>false</SuppressTrimAnalysisWarnings>
         <TrimmerSingleWarn>false</TrimmerSingleWarn>
+        <IlcGenerateMstatFile>true</IlcGenerateMstatFile>
+        <IlcGenerateDgmlFile>true</IlcGenerateDgmlFile>
     </PropertyGroup>
 
     <!-- Import NDK pressets -->
@@ -22,11 +25,12 @@
     <PropertyGroup>
         <TrimUnusedDependencies>true</TrimUnusedDependencies>
         <RootAllApplicationAssemblies>false</RootAllApplicationAssemblies>
-        <IlcGenerateCompleteTypeMetadata>true</IlcGenerateCompleteTypeMetadata>
+        <IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
         <IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
         <IlcTrimMetadata>true</IlcTrimMetadata>
-        <IlcOptimizationPreference>Speed</IlcOptimizationPreference>
+        <OptimizationPreference>Size</OptimizationPreference>
         <IlcFoldIdenticalMethodBodies>true</IlcFoldIdenticalMethodBodies>
+        <!--<IlcDisableReflection>true</IlcDisableReflection>-->
     </PropertyGroup>
 
     <ItemGroup>
