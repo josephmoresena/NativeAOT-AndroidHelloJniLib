@@ -49,7 +49,7 @@ internal sealed class HelloJni : IDisposable
 				Task.Factory.StartNew(HelloJni.ToastBackground, this, TaskCreationOptions.LongRunning);
 		}
 		this._count++;
-		String result = "Hello from JNI! Compiled with NativeAOT." + Environment.NewLine +
+		String result = "Hello from JNI! Compiled with NativeAOT (jnetinterface)." + Environment.NewLine +
 			ExportedMethods.GetRuntimeInformation(call, this._load, this._count);
 		return JStringObject.Create(env, result);
 	}
