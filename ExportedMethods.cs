@@ -102,7 +102,7 @@ public static class ExportedMethods
 					Task.Factory.StartNew(ExportedMethods.ToastBackground, TaskCreationOptions.LongRunning);
 		}
 
-		String result = "Hello from JNI! Compiled with NativeAOT." + Environment.NewLine +
+		String result = "Hello from JNI! Compiled with NativeAOT (main)." + Environment.NewLine +
 			ExportedMethods.GetRuntimeInformation(call);
 		return JniHelper.CreateString(jEnv, result).GetValueOrDefault();
 	}
