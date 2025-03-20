@@ -40,14 +40,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Rxmxnx.JNetInterface" Version="0.8.0"/>
+        <PackageReference Include="Rxmxnx.JNetInterface" Version="0.9.0"/>
         <!--JNI libs needs to be compiled with -z noexecstack-->
         <LinkerArg Condition="$(LinuxHost) == 'true' Or $(IsAndroid) == 'true'" Include="-z noexecstack"/>
         <RuntimeHostConfigurationOption Include="JNetInterface.DisableTypeMetadataToString" Value="true" Trim="true"/>
         <RuntimeHostConfigurationOption Include="JNetInterface.DisableMetadataValidation" Value="true" Trim="true"/>
-        <!-- Rxmxnx.JNetInterface <= 0.8.0 -->
-        <RuntimeHostConfigurationOption Include="JNetInterface.DisableNestingArrayAutoGeneration" Value="true" Trim="true"/>
-        <!-- Rxmxnx.JNetInterface >= 0.9.0 -->
         <RuntimeHostConfigurationOption Include="JNetInterface.DisableJaggedArrayAutoGeneration" Value="true" Trim="true"/>
         <!--<RuntimeHostConfigurationOption Include="JNetInterface.EnableTrace" Value="true" Trim="true"/>-->
         <RuntimeHostConfigurationOption Include="JNetInterface.DisableBuiltInThrowableAutoRegistration" Value="true" Trim="true"/>
