@@ -26,6 +26,7 @@ internal static class ExportedMethods
 		=> $"Load: {load.GetString()}" + Environment.NewLine + $"Call: {call.GetString()}" + Environment.NewLine +
 			$"Count: {count}" + Environment.NewLine + Environment.NewLine +
 			$"Number of Cores: {Environment.ProcessorCount}" + Environment.NewLine +
+            $"Little-Endian: {BitConverter.IsLittleEndian}" + Environment.NewLine + 
 			$"OS: {RuntimeInformation.OSDescription}" + Environment.NewLine +
 			$"OS Arch: {RuntimeInformation.OSArchitecture.GetName()}" + Environment.NewLine +
 			$"OS Version: {Environment.OSVersion}" + Environment.NewLine + $"Computer: {Environment.MachineName}" +
