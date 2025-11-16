@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFramework>net9.0</TargetFramework>
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Nullable>enable</Nullable>
@@ -40,7 +40,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Rxmxnx.JNetInterface" Version="0.9.6" />
+        <PackageReference Include="Rxmxnx.JNetInterface" Version="1.0.0" />
         <!--JNI libs needs to be compiled with -z noexecstack-->
         <LinkerArg Condition="$(LinuxHost) == 'true' Or $(IsAndroid) == 'true'" Include="-z noexecstack"/>
         <RuntimeHostConfigurationOption Include="JNetInterface.DisableTypeMetadataToString" Value="true" Trim="true"/>
