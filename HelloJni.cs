@@ -50,6 +50,8 @@ internal sealed class HelloJni : IDisposable
 		}
 		this._count++;
 		String result = "Hello from JNI! Compiled with NativeAOT (jnetinterface)." + Environment.NewLine +
+            $"JNI Version: 0x{env.Version:x8}" + Environment.NewLine +
+            $"JRE Version: {env.VirtualMachine.Version.GetRuntimeName()}" + Environment.NewLine +
 			ExportedMethods.GetRuntimeInformation(call, this._load, this._count);
 		return JStringObject.Create(env, result);
 	}
