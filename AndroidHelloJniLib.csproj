@@ -39,7 +39,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="2.8.5" />
+        <PackageReference Include="Rxmxnx.PInvoke.Extensions" Version="2.9.0" />
     </ItemGroup>
 
 </Project>
