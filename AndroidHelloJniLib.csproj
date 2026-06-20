@@ -40,7 +40,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Rxmxnx.JNetInterface" Version="1.0.0" />
+        <PackageReference Include="Rxmxnx.JNetInterface" Version="1.2.0" />
         <!--JNI libs needs to be compiled with -z noexecstack-->
         <LinkerArg Condition="$(LinuxHost) == 'true' Or $(IsAndroid) == 'true'" Include="-z noexecstack"/>
         <RuntimeHostConfigurationOption Include="JNetInterface.DisableTypeMetadataToString" Value="true" Trim="true"/>
