@@ -174,7 +174,7 @@ public static class ExportedMethods
 		                          .GetUnsafeFixedContext(name.Length, FixedPointerValue.UnsafeDisposable,
 		                                                 out ReadOnlyFixedContextValue<Byte> fName);
 		descriptor.GetUnsafeValPtr()
-		          .GetUnsafeFixedContext(name.Length, _, out ReadOnlyFixedContextValue<Byte> fDescriptor);
+		          .GetUnsafeFixedContext(descriptor.Length, _, out ReadOnlyFixedContextValue<Byte> fDescriptor);
 		return JniHelper.GetStaticMethodId(jEnv, jClass, fName, fDescriptor);
 	}
 	private static JMethodId? GetMakeTextMethodId(JEnvRef jEnv)
@@ -186,7 +186,7 @@ public static class ExportedMethods
 		                          .GetUnsafeFixedContext(name.Length, FixedPointerValue.UnsafeDisposable,
 		                                                 out ReadOnlyFixedContextValue<Byte> fName);
 		descriptor.GetUnsafeValPtr()
-		          .GetUnsafeFixedContext(name.Length, _, out ReadOnlyFixedContextValue<Byte> fDescriptor);
+		          .GetUnsafeFixedContext(descriptor.Length, _, out ReadOnlyFixedContextValue<Byte> fDescriptor);
 		return JniHelper.GetStaticMethodId(jEnv, jClass, fName, fDescriptor);
 	}
 	private static JMethodId? GetShowMethodId(JEnvRef jEnv)
@@ -198,7 +198,7 @@ public static class ExportedMethods
 		                          .GetUnsafeFixedContext(name.Length, FixedPointerValue.UnsafeDisposable,
 		                                                 out ReadOnlyFixedContextValue<Byte> fName);
 		descriptor.GetUnsafeValPtr()
-		          .GetUnsafeFixedContext(name.Length, _, out ReadOnlyFixedContextValue<Byte> fDescriptor);
+		          .GetUnsafeFixedContext(descriptor.Length, _, out ReadOnlyFixedContextValue<Byte> fDescriptor);
 		return JniHelper.GetMethodId(jEnv, jClass, fName, fDescriptor);
 	}
 
