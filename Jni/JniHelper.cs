@@ -12,7 +12,7 @@ internal static class JniHelper
 {
 	public const Int32 JniVersion = 0x00010006; //JNI_VERSION_1_6;
 
-	public static JEnvRef? Attach(JavaVMRef javaVm, IReadOnlyFixedMemory<Byte> threadName, out Boolean newAttach)
+	public static JEnvRef? Attach(JavaVMRef javaVm, ReadOnlyFixedContextValue<Byte> threadName, out Boolean newAttach)
 	{
 		ref JavaVMValue value = ref javaVm.VirtualMachine;
 		ref JInvokeInterface jInvoke = ref value.Functions;
@@ -34,7 +34,7 @@ internal static class JniHelper
 		newAttach = true;
 		return attachCurrentThread(javaVm, out jEnv, in args) == JResult.Ok ? jEnv : null;
 	}
-	public static JEnvRef? AttachDaemon(JavaVMRef javaVm, IReadOnlyFixedMemory<Byte> daemonName)
+	public static JEnvRef? AttachDaemon(JavaVMRef javaVm, ReadOnlyFixedContextValue<Byte> daemonName)
 	{
 		ref JavaVMValue value = ref javaVm.VirtualMachine;
 		ref JInvokeInterface jInvoke = ref value.Functions;
@@ -57,7 +57,7 @@ internal static class JniHelper
 
 		detachCurrentThread(javaVm);
 	}
-	public static JGlobalRef? GetGlobalClass(JEnvRef jEnv, IReadOnlyFixedMemory<Byte> className)
+	public static JGlobalRef? GetGlobalClass(JEnvRef jEnv, ReadOnlyFixedContextValue<Byte> className)
 	{
 		ref readonly JEnvValue value = ref jEnv.Environment;
 		ref JNativeInterface jInterface = ref value.Functions;
@@ -114,7 +114,7 @@ internal static class JniHelper
 
 		IntPtr newStringPtr = jInterface.NewStringPointer;
 		NewStringDelegate newString = newStringPtr.GetUnsafeDelegate<NewStringDelegate>()!;
-		using IReadOnlyFixedMemory<Char>.IDisposable ctx = textValue.AsMemory().GetFixedContext();
+		using IDisposable _ = textValue.AsMemory().GetFixedContext(out ReadOnlyFixedContextValue<Char> ctx);
 		JStringLocalRef jString = newString(jEnv, ctx.ValuePointer, ctx.Values.Length);
 
 		return !JniHelper.ExceptionCheck(jEnv) ? jString : null;
@@ -169,8 +169,8 @@ internal static class JniHelper
 		JBoolean result = isSameObject(jEnv, (JObjectLocalRef)jWeak, default);
 		return !JniHelper.ExceptionCheck(jEnv) ? !result : null;
 	}
-	public static JMethodId? GetMethodId(JEnvRef jEnv, JClassLocalRef jClass, IReadOnlyFixedMemory<Byte> methodName,
-		IReadOnlyFixedMemory<Byte> descriptor)
+	public static JMethodId? GetMethodId(JEnvRef jEnv, JClassLocalRef jClass,
+		ReadOnlyFixedContextValue<Byte> methodName, ReadOnlyFixedContextValue<Byte> descriptor)
 	{
 		ref readonly JEnvValue value = ref jEnv.Environment;
 		ref JNativeInterface jInterface = ref value.Functions;
@@ -181,7 +181,7 @@ internal static class JniHelper
 		return !JniHelper.ExceptionCheck(jEnv) ? methodId : null;
 	}
 	public static JMethodId? GetStaticMethodId(JEnvRef jEnv, JClassLocalRef jClass,
-		IReadOnlyFixedMemory<Byte> methodName, IReadOnlyFixedMemory<Byte> descriptor)
+		ReadOnlyFixedContextValue<Byte> methodName, ReadOnlyFixedContextValue<Byte> descriptor)
 	{
 		ref readonly JEnvValue value = ref jEnv.Environment;
 		ref JNativeInterface jInterface = ref value.Functions;
@@ -202,7 +202,7 @@ internal static class JniHelper
 		CallStaticVoidMethodADelegate callStaticVoidMethod =
 			callStaticVoidMethodPtr.GetUnsafeDelegate<CallStaticVoidMethodADelegate>()!;
 
-		using IReadOnlyFixedMemory<JValue>.IDisposable fArgs = args.AsMemory().GetFixedContext();
+		using IDisposable _ = args.AsMemory().GetFixedContext(out FixedContextValue<JValue> fArgs);
 		callStaticVoidMethod(jEnv, jClass, jMethodId, fArgs.ValuePointer);
 	}
 	public static JObjectLocalRef? CallStaticObjectMethod(JEnvRef jEnv, JClassLocalRef jClass, JMethodId jMethodId,
@@ -215,7 +215,7 @@ internal static class JniHelper
 		CallStaticObjectMethodADelegate callStaticObjectMethod =
 			callStaticObjectMethodPtr.GetUnsafeDelegate<CallStaticObjectMethodADelegate>()!;
 
-		using IReadOnlyFixedMemory<JValue>.IDisposable fArgs = args.AsMemory().GetFixedContext();
+		using IDisposable _ = args.AsMemory().GetFixedContext(out FixedContextValue<JValue> fArgs);
 		JObjectLocalRef jObject = callStaticObjectMethod(jEnv, jClass, jMethodId, fArgs.ValuePointer);
 		return !JniHelper.ExceptionCheck(jEnv) ? jObject : null;
 	}
@@ -227,7 +227,7 @@ internal static class JniHelper
 		IntPtr callVoidMethodPtr = jInterface.CallVoidMethodAPointer;
 		CallVoidMethodADelegate callVoidMethod = callVoidMethodPtr.GetUnsafeDelegate<CallVoidMethodADelegate>()!;
 
-		using IReadOnlyFixedMemory<JValue>.IDisposable fArgs = args.AsMemory().GetFixedContext();
+		using IDisposable _ = args.AsMemory().GetFixedContext(out FixedContextValue<JValue> fArgs);
 		callVoidMethod(jEnv, jObject, jMethodId, fArgs.ValuePointer);
 	}
 }

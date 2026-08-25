@@ -30,27 +30,22 @@ public static class ExportedMethods
 	internal static Int32 LoadLibrary(JavaVMRef javaVm, IntPtr unknown)
 	{
 		ExportedMethods.load = DateTime.Now;
-		ReadOnlySpan<Byte> threadName = "OnLoad"u8;
-		JEnvRef? jEnv = JniHelper.Attach(javaVm, threadName.GetUnsafeValPtr().GetUnsafeFixedContext(threadName.Length),
-		                                 out Boolean newAttach);
 		ExportedMethods.loadedJavaVm = javaVm;
-		if (!jEnv.HasValue) return JniHelper.JniVersion;
+
+		"OnLoad"u8.WithSafeFixed(new AttachFuncion(javaVm), out AttachResult attach);
+		if (!attach.JEnv.HasValue) return JniHelper.JniVersion;
 		try
 		{
-			ReadOnlySpan<Byte> looperClassName = "android/os/Looper"u8;
-			ReadOnlySpan<Byte> toastClassName = "android/widget/Toast"u8;
-			using (IReadOnlyFixedMemory<Byte>.IDisposable fName = looperClassName.GetUnsafeValPtr()
-				       .GetUnsafeFixedContext(looperClassName.Length))
-				ExportedMethods.looperGlobalClass = JniHelper.GetGlobalClass(jEnv.Value, fName);
-			using (IReadOnlyFixedMemory<Byte>.IDisposable fName = toastClassName.GetUnsafeValPtr()
-				       .GetUnsafeFixedContext(toastClassName.Length))
-				ExportedMethods.toastGlobalClass = JniHelper.GetGlobalClass(jEnv.Value, fName);
+			"android/os/Looper"u8.WithSafeFixed(new GlobalClassFunction(attach.JEnv.Value),
+			                                    out ExportedMethods.looperGlobalClass);
+			"android/widget/Toast"u8.WithSafeFixed(new GlobalClassFunction(attach.JEnv.Value),
+			                                       out ExportedMethods.toastGlobalClass);
 		}
 		finally
 		{
 			if (ExportedMethods.looperGlobalClass.HasValue && !ExportedMethods.toastGlobalClass.HasValue)
-				JniHelper.RemoveGlobal(jEnv.Value, ExportedMethods.looperGlobalClass.Value);
-			if (newAttach)
+				JniHelper.RemoveGlobal(attach.JEnv.Value, ExportedMethods.looperGlobalClass.Value);
+			if (attach.NewAttach)
 				JniHelper.Detach(javaVm);
 		}
 		return JniHelper.JniVersion;
@@ -60,29 +55,27 @@ public static class ExportedMethods
 	internal static void UnloadLibrary(JavaVMRef javaVm, IntPtr unknown)
 	{
 		if (ExportedMethods.loadedJavaVm != javaVm) return;
-		ReadOnlySpan<Byte> threadName = "OnUnload"u8;
-		JEnvRef? jEnv = JniHelper.Attach(javaVm, threadName.GetUnsafeValPtr().GetUnsafeFixedContext(threadName.Length),
-		                                 out Boolean newAttach);
-		if (jEnv.HasValue)
+		"OnUnload"u8.WithSafeFixed(new AttachFuncion(javaVm), out AttachResult attach);
+		if (attach.JEnv.HasValue)
 		{
 			ExportedMethods.backgroundTask.Wait();
 			if (ExportedMethods.context.HasValue)
-				JniHelper.RemoveWeakGlobal(jEnv.Value, ExportedMethods.context.Value);
+				JniHelper.RemoveWeakGlobal(attach.JEnv.Value, ExportedMethods.context.Value);
 			if (ExportedMethods.toastGlobalClass.HasValue)
 			{
-				JniHelper.RemoveGlobal(jEnv.Value, ExportedMethods.toastGlobalClass.Value);
+				JniHelper.RemoveGlobal(attach.JEnv.Value, ExportedMethods.toastGlobalClass.Value);
 				ExportedMethods.toastGlobalClass = default;
 				ExportedMethods.showMethodId = default;
 				ExportedMethods.makeTextMethodId = default;
 			}
 			if (ExportedMethods.looperGlobalClass.HasValue)
 			{
-				JniHelper.RemoveGlobal(jEnv.Value, ExportedMethods.looperGlobalClass.Value);
+				JniHelper.RemoveGlobal(attach.JEnv.Value, ExportedMethods.looperGlobalClass.Value);
 				ExportedMethods.looperGlobalClass = default;
 				ExportedMethods.prepareMethodId = default;
 			}
 		}
-		if (newAttach)
+		if (attach.NewAttach)
 			JniHelper.Detach(javaVm);
 		ExportedMethods.loadedJavaVm = default;
 	}
@@ -113,9 +106,8 @@ public static class ExportedMethods
 		if (!ExportedMethods.looperGlobalClass.HasValue) return;
 		if (!ExportedMethods.loadedJavaVm.HasValue) return;
 
-		ReadOnlySpan<Byte> daemonName = "ToastBackground"u8;
-		JEnvRef? jEnv = JniHelper.AttachDaemon(ExportedMethods.loadedJavaVm.Value,
-		                                       daemonName.GetUnsafeValPtr().GetUnsafeFixedContext(daemonName.Length));
+		"ToastBackground"u8.WithSafeFixed(new AttachDaemonFunction(ExportedMethods.loadedJavaVm.Value),
+		                                  out JEnvRef? jEnv);
 		if (!jEnv.HasValue) return;
 		try
 		{
@@ -178,31 +170,43 @@ public static class ExportedMethods
 		ReadOnlySpan<Byte> name = "prepare"u8;
 		ReadOnlySpan<Byte> descriptor = "()V"u8;
 		JClassLocalRef jClass = (JClassLocalRef)(JObjectLocalRef)ExportedMethods.looperGlobalClass.GetValueOrDefault();
-		return JniHelper.GetStaticMethodId(jEnv, jClass, name.GetUnsafeValPtr().GetUnsafeFixedContext(name.Length),
-		                                   descriptor.GetUnsafeValPtr().GetUnsafeFixedContext(descriptor.Length));
+		using IDisposable _ = name.GetUnsafeValPtr()
+		                          .GetUnsafeFixedContext(name.Length, FixedPointerValue.UnsafeDisposable,
+		                                                 out ReadOnlyFixedContextValue<Byte> fName);
+		descriptor.GetUnsafeValPtr()
+		          .GetUnsafeFixedContext(name.Length, _, out ReadOnlyFixedContextValue<Byte> fDescriptor);
+		return JniHelper.GetStaticMethodId(jEnv, jClass, fName, fDescriptor);
 	}
 	private static JMethodId? GetMakeTextMethodId(JEnvRef jEnv)
 	{
 		ReadOnlySpan<Byte> name = "makeText"u8;
 		ReadOnlySpan<Byte> descriptor = "(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;"u8;
 		JClassLocalRef jClass = (JClassLocalRef)(JObjectLocalRef)ExportedMethods.toastGlobalClass.GetValueOrDefault();
-		return JniHelper.GetStaticMethodId(jEnv, jClass, name.GetUnsafeValPtr().GetUnsafeFixedContext(name.Length),
-		                                   descriptor.GetUnsafeValPtr().GetUnsafeFixedContext(descriptor.Length));
+		using IDisposable _ = name.GetUnsafeValPtr()
+		                          .GetUnsafeFixedContext(name.Length, FixedPointerValue.UnsafeDisposable,
+		                                                 out ReadOnlyFixedContextValue<Byte> fName);
+		descriptor.GetUnsafeValPtr()
+		          .GetUnsafeFixedContext(name.Length, _, out ReadOnlyFixedContextValue<Byte> fDescriptor);
+		return JniHelper.GetStaticMethodId(jEnv, jClass, fName, fDescriptor);
 	}
 	private static JMethodId? GetShowMethodId(JEnvRef jEnv)
 	{
 		ReadOnlySpan<Byte> name = "show"u8;
 		ReadOnlySpan<Byte> descriptor = "()V"u8;
 		JClassLocalRef jClass = (JClassLocalRef)(JObjectLocalRef)ExportedMethods.toastGlobalClass.GetValueOrDefault();
-		return JniHelper.GetMethodId(jEnv, jClass, name.GetUnsafeValPtr().GetUnsafeFixedContext(name.Length),
-		                             descriptor.GetUnsafeValPtr().GetUnsafeFixedContext(descriptor.Length));
+		using IDisposable _ = name.GetUnsafeValPtr()
+		                          .GetUnsafeFixedContext(name.Length, FixedPointerValue.UnsafeDisposable,
+		                                                 out ReadOnlyFixedContextValue<Byte> fName);
+		descriptor.GetUnsafeValPtr()
+		          .GetUnsafeFixedContext(name.Length, _, out ReadOnlyFixedContextValue<Byte> fDescriptor);
+		return JniHelper.GetMethodId(jEnv, jClass, fName, fDescriptor);
 	}
 
 	private static String GetRuntimeInformation(DateTime call)
 		=> $"Load: {ExportedMethods.load.GetString()}" + Environment.NewLine + $"Call: {call.GetString()}" +
 			Environment.NewLine + $"Count: {ExportedMethods.count}" + Environment.NewLine + Environment.NewLine +
 			$"Number of Cores: {Environment.ProcessorCount}" + Environment.NewLine +
-            $"Little-Endian: {BitConverter.IsLittleEndian}" + Environment.NewLine + 
+			$"Little-Endian: {BitConverter.IsLittleEndian}" + Environment.NewLine +
 			$"OS: {RuntimeInformation.OSDescription}" + Environment.NewLine +
 			$"OS Arch: {RuntimeInformation.OSArchitecture.GetName()}" + Environment.NewLine +
 			$"OS Version: {Environment.OSVersion}" + Environment.NewLine + $"Computer: {Environment.MachineName}" +
@@ -238,4 +242,29 @@ public static class ExportedMethods
 	}
 	private static String GetString(this DateTime? date)
 		=> date != default ? date.Value.ToString("yyyy-MM-dd HH:mm:ss.fff") : "null";
+
+	private readonly struct AttachResult
+	{
+		public JEnvRef? JEnv { get; init; }
+		public Boolean NewAttach { get; init; }
+	}
+
+	#region FixedStructs
+	private readonly struct AttachFuncion(JavaVMRef javaVm) : IReadOnlyFixedContextFunction<Byte, AttachResult>
+	{
+		public AttachResult Apply(scoped ReadOnlyFixedContextValue<Byte> threadName)
+			=> new() { JEnv = JniHelper.Attach(javaVm, threadName, out Boolean newAttach), NewAttach = newAttach, };
+	}
+
+	private readonly struct AttachDaemonFunction(JavaVMRef javaVm) : IReadOnlyFixedContextFunction<Byte, JEnvRef?>
+	{
+		public JEnvRef? Apply(scoped ReadOnlyFixedContextValue<Byte> daemonName)
+			=> JniHelper.AttachDaemon(javaVm, daemonName);
+	}
+
+	private readonly struct GlobalClassFunction(JEnvRef jEnv) : IReadOnlyFixedContextFunction<Byte, JGlobalRef?>
+	{
+		public JGlobalRef? Apply(scoped ReadOnlyFixedContextValue<Byte> fName) => JniHelper.GetGlobalClass(jEnv, fName);
+	}
+	#endregion
 }
