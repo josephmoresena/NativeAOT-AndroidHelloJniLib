@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 using Rxmxnx.JNetInterface;
@@ -13,6 +14,7 @@ internal static class ExportedMethods
 	private const String helloJniName = "com_example_hellojni_HelloJni";
 
 	private static HelloJni? instance;
+	private static readonly HttpClient httpClient = new();
 
 	static ExportedMethods()
 	{
@@ -26,7 +28,7 @@ internal static class ExportedMethods
 		=> $"Load: {load.GetString()}" + Environment.NewLine + $"Call: {call.GetString()}" + Environment.NewLine +
 			$"Count: {count}" + Environment.NewLine + Environment.NewLine +
 			$"Number of Cores: {Environment.ProcessorCount}" + Environment.NewLine +
-            $"Little-Endian: {BitConverter.IsLittleEndian}" + Environment.NewLine + 
+			$"Little-Endian: {BitConverter.IsLittleEndian}" + Environment.NewLine +
 			$"OS: {RuntimeInformation.OSDescription}" + Environment.NewLine +
 			$"OS Arch: {RuntimeInformation.OSArchitecture.GetName()}" + Environment.NewLine +
 			$"OS Version: {Environment.OSVersion}" + Environment.NewLine + $"Computer: {Environment.MachineName}" +
@@ -98,19 +100,22 @@ internal static class ExportedMethods
 		};
 	private static String GetString(this DateTime date) => ((DateTime?)date).GetString();
 	private static String GetString(this DateTime? date)
-		=> date is not null ? date.Value.ToString("yyyy-MM-dd HH:mm:ss.fff") : "null";
+		=> date is not null ? date.Value.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture) : "null";
 	private static String GetIp()
 	{
 		try
 		{
-			using HttpClient httpClient = new();
 			using HttpRequestMessage request = new(HttpMethod.Get, "https://api64.ipify.org/?format=text");
-			using HttpResponseMessage response = httpClient.Send(request);
-			return response.Content.ReadAsStringAsync().Result;
+			return ExportedMethods.GetIpAsync(request).Result;
 		}
 		catch (Exception e)
 		{
 			return e.Message;
 		}
+	}
+	private static async Task<String> GetIpAsync(HttpRequestMessage request)
+	{
+		using HttpResponseMessage response = await ExportedMethods.httpClient.SendAsync(request);
+		return await response.Content.ReadAsStringAsync();
 	}
 }

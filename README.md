@@ -4,7 +4,7 @@ This repo is a sample for Android JNI libraries compilation with NativeAOT.
 For now, we support two ways to compile this library:
 
 1. Using BFlat tool.
-2. Using .NET SDK 9.0
+2. Using .NET SDK 11.0
 
 # BFlat
 
@@ -27,11 +27,7 @@ Extract dlls file to BFlatSupport folder.
 
 Use the following command to build library.
 
-	    {PATH_TO_BFLAT}bflat build -r BFlatSupport/Rxmxnx.PInvoke.Extensions.dll -r BFlatSupport/Rxmxnx.JNetInterface.Core.dll -r BFlatSupport/Rxmxnx.JNetInterface.dll --no-stacktrace-data --no-globalization --no-exception-messages -Os --no-pie --separate-symbols --os:linux --arch:arm64 --libc:bionic -o:libhello-jni.so
-
-# NET SDK 9.0
-
-With new .NET 9.0 SDK we are now able to compile NativeAOT android binaries using linux-bionic RID.
+	    {PATH_TO_BFLAT}bflat build -r BFlatSupport/Rxmxnx.PInvoke.Extensions.dll -r BFlatSupport/Rxmxnx.JNetInterface.Core.dll -r BFlatSupport/Rxmxnx.JNetInterface.dll --no-stacktrace-data --no-globalization --no-exception-messages -Os --no-pie --separate-symbols --os:linux --arch:arm64 --libc:bionic -o:hello-jni.so
 
 ### How to build it
 
@@ -42,8 +38,7 @@ The following commands assume:
 
 * .NET project imports [BionicNativeAot.targets](BionicNativeAot.targets) file.
 * **ANDROID_NDK_ROOT** environment variable: Full path to NDK. Used to preconfigure **CppCompilerAndLinker**, *
-  *ObjCopyName** and
-  **SysRoot**.
+  *ObjCopyName** and **SysRoot**.
 * Android NDK version is **r26b**.
 * Target architecture is **arm64**.
 * Host architecture is windows, linux or macOS x64.
@@ -56,7 +51,8 @@ The following commands assume:
 
 #### MSBuild Parameters
 
-* **CppCompilerAndLinker**: Linker. On Windows, NDK executables must be encapsulated in **cmd** files in order to be used.
+* **CppCompilerAndLinker**: Linker. On Windows, NDK executables must be encapsulated in **cmd** files in order to be
+  used.
   On Linux and macOS, the executables are used directly.
 * **SysRoot**: Sysroot path from NDK. Needed for NDK compilation.
 * **RemoveSections**: Removes **__init** and **__fini** symbols from .exports file. When it detects that the NDK version
