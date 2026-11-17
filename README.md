@@ -4,7 +4,7 @@ This repo is a sample for Android JNI libraries compilation with NativeAOT.
 For now, we support two ways to compile this library:
 
 1. Using BFlat tool.
-2. Using .NET SDK 9.0
+2. Using .NET SDK 11.0
 
 # BFlat
 
@@ -26,10 +26,6 @@ Extract dlls file to BFlatSupport folder.
 Use the following command to build library.
 
 	    {PATH_TO_BFLAT}bflat build -r BFlatSupport/Rxmxnx.PInvoke.Extensions.dll --no-stacktrace-data --no-globalization --no-exception-messages -Os --no-pie --separate-symbols --os:linux --arch:arm64 --libc:bionic -o:libhello-jni.so
-
-# NET SDK 8.0
-
-With new .NET 9.0 SDK we are now able to compile NativeAOT android binaries using linux-bionic RID.
 
 ### How to build it
 
