@@ -3,8 +3,8 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 
 using Rxmxnx.JNetInterface;
-using Rxmxnx.JNetInterface.Lang;
 using Rxmxnx.JNetInterface.Native.References;
+using Rxmxnx.JNetInterface.Native.Values;
 using Rxmxnx.PInvoke;
 
 namespace HelloJniLib;
@@ -58,7 +58,7 @@ internal static class ExportedMethods
 	[UnmanagedCallersOnly(EntryPoint = "JNI_OnUnload")]
 	private static void UnloadLibrary(JVirtualMachineRef vmRef, IntPtr _)
 	{
-		// Android doesn't call JNI_OnUnload but it would be an implementation
+		// Android doesn't call JNI_OnUnload, but it would be an implementation
 		if (ExportedMethods.instance?.VirtualMachine.Reference != vmRef)
 			return;
 		ExportedMethods.instance.Dispose();
@@ -68,16 +68,17 @@ internal static class ExportedMethods
 	private static JStringLocalRef Hello(JEnvironmentRef envRef, JObjectLocalRef localRef)
 	{
 		ExportedMethods.LogAndroid($"Instance call, {envRef}, {localRef}");
-		DateTime call = DateTime.Now;
-		JNativeCallAdapter adapter = // Creates call adapter initializing context object. 
-			(ExportedMethods.instance is not null ?
-				JNativeCallAdapter.Create(ExportedMethods.instance.VirtualMachine, envRef, localRef,
-				                          out AndroidContext context) :
-				JNativeCallAdapter.Create(envRef, localRef, out context)).Build();
-		ExportedMethods.instance ??= // Initializes the instance if JNI_OnLoad was not called.
-			new(adapter.Environment.VirtualMachine);
-		JStringObject jString = ExportedMethods.instance.GetString(call, adapter.Environment, context);
-		return adapter.FinalizeCall(jString); // Finalize adapter with a JString result.
+		// Initializes the instance if JNI_OnLoad was not called.
+		ExportedMethods.instance ??= HelloJni.Create(envRef);
+		// Creates call adapter initializing context object. 
+#if !NET9_0_OR_GREATER
+		envRef.WithNativeFrame(ExportedMethods.instance, out JStringLocalRef result,
+		                       [JReferenceTypeToken.Create<AndroidContext>(localRef),]);
+#else
+		envRef.WithNativeFrame(ExportedMethods.instance, out JStringLocalRef result,
+		                       JReferenceTypeToken.Create<AndroidContext>(localRef));
+#endif
+		return result;
 	}
 
 	private static String GetRuntimeInformation()

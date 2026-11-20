@@ -1,10 +1,14 @@
+using System.Runtime.CompilerServices;
+
 using Rxmxnx.JNetInterface;
+using Rxmxnx.JNetInterface.Functional;
 using Rxmxnx.JNetInterface.Lang;
 using Rxmxnx.JNetInterface.Native;
+using Rxmxnx.JNetInterface.Native.References;
 
 namespace HelloJniLib;
 
-internal sealed class HelloJni : IDisposable
+internal sealed class HelloJni : IFrameFunction<JStringObject>, IDisposable
 {
 	private readonly DateTime? _load;
 	private readonly JGlobal _looperClass;
@@ -39,7 +43,20 @@ internal sealed class HelloJni : IDisposable
 		GC.SuppressFinalize(this);
 	}
 
-	public JStringObject GetString(DateTime call, IEnvironment env, AndroidContext context)
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public JStringObject Apply(IEnvironment env, scoped ReadOnlySpan<JReferenceObject?> objects)
+		=> this.GetString(DateTime.UtcNow, env, (AndroidContext)objects[0]!);
+
+	public static HelloJni Create(JEnvironmentRef envRef)
+	{
+		NativeConstructor constructor = new();
+		constructor.WithNativeFrame(envRef);
+		return constructor.Instance!;
+	}
+
+	~HelloJni() { this.ReleaseUnmanagedResources(); }
+
+	private JStringObject GetString(DateTime call, IEnvironment env, AndroidContext context)
 	{
 		env.LocalCapacity = 20;
 		if (this._backgroundThread.IsCompleted) // Background task is running?
@@ -50,13 +67,11 @@ internal sealed class HelloJni : IDisposable
 		}
 		this._count++;
 		String result = "Hello from JNI! Compiled with NativeAOT (jnetinterface)." + Environment.NewLine +
-            $"JNI Version: 0x{env.Version:x8}" + Environment.NewLine +
-            $"JRE Version: {env.VirtualMachine.Version.GetRuntimeName()}" + Environment.NewLine +
+			$"JNI Version: 0x{env.Version:x8}" + Environment.NewLine +
+			$"JRE Version: {env.VirtualMachine.Version.GetRuntimeName()}" + Environment.NewLine +
 			ExportedMethods.GetRuntimeInformation(call, this._load, this._count);
 		return JStringObject.Create(env, result);
 	}
-
-	~HelloJni() { this.ReleaseUnmanagedResources(); }
 
 	private void ReleaseUnmanagedResources()
 	{
@@ -105,5 +120,12 @@ internal sealed class HelloJni : IDisposable
 			// Clear JNI exception.
 			thread.PendingException = default;
 		}
+	}
+
+	private struct NativeConstructor : IFrameAction
+	{
+		public HelloJni? Instance { get; private set; }
+		public void Accept(IEnvironment env, scoped ReadOnlySpan<JReferenceObject?> objects)
+			=> this.Instance = new(env.VirtualMachine);
 	}
 }
